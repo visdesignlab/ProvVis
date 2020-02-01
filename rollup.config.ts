@@ -5,6 +5,7 @@ import camelCase from 'lodash.camelcase'
 import typescript from 'rollup-plugin-typescript2'
 import json from 'rollup-plugin-json'
 import external from 'rollup-plugin-peer-deps-external'
+import postcss from 'rollup-plugin-postcss'
 
 const pkg = require('./package.json')
 
@@ -30,7 +31,7 @@ export default {
     typescript({
       useTsconfigDeclarationDir: true,
       rollupCommonJSResolveHack: true,
-      exclude: ['**/__tests__/**'],
+      exclude: ['**/__tests__/**', '**/stories/**)'],
       clean: true
     }),
     // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
@@ -45,6 +46,7 @@ export default {
     // which external modules to include in the bundle
     // https://github.com/rollup/rollup-plugin-node-resolve#usage
     resolve(),
+    postcss(),
 
     // Resolve source maps to the original source
     sourceMaps()
