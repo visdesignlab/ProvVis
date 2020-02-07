@@ -10,16 +10,7 @@ export interface ExtendedHierarchyNode extends HierarchyNode<ProvenanceNode<unkn
 
 export type ExtendedStratifiedMap = { [key: string]: ExtendedHierarchyNode };
 
-export function treeLayout(
-  nodes: StratifiedMap,
-  nodeList: StratifiedList,
-  current: string,
-  root: string
-) {
-  const childLeaves = nodeList.filter(d => {
-    return !d.children;
-  });
-
+export function treeLayout(nodes: StratifiedMap, current: string, root: string) {
   const depthMap: { [key: string]: any } = {};
 
   const currentPath = getPathTo(nodes, root, current);

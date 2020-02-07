@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import {
   ProvenanceGraph,
@@ -7,19 +7,34 @@ import {
   ProvenanceNode,
   isStateNode
 } from '@visdesignlab/provenance-lib-core';
-import { stratify, hierarchy, HierarchyNode, tree } from 'd3';
+import { stratify, HierarchyNode } from 'd3';
 import { treeLayout } from '../Utils/TreeLayout';
 import translate from '../Utils/translate';
-import { Popup, Card } from 'semantic-ui-react';
+import { NodeGroup } from 'react-move';
+import BackboneNode from './BackboneNode';
+import Link from './Link';
+import { treeColor } from './Styles';
+import nodeTransitions from './NodeTransitions';
+import linkTransitions from './LinkTransitions';
 
 interface ProvVisProps {
   graph: ProvenanceGraph<unknown>;
   root: NodeID;
   height?: number;
   width?: number;
+  sideOffset?: number;
   current: NodeID;
   nodeMap: Nodes<unknown>;
   changeCurrent: any;
+  gutter?: number;
+  backboneGutter?: number;
+  verticalSpace?: number;
+  regularCircleRadius?: number;
+  backboneCircleRadius?: number;
+  regularCircleStroke?: number;
+  backboneCircleStroke?: number;
+  topOffset?: number;
+  textSize?: number;
 }
 
 export type StratifiedMap = { [key: string]: HierarchyNode<ProvenanceNode<unknown>> };
@@ -31,8 +46,24 @@ const ProvVis: FC<ProvVisProps> = ({
   height = 2000,
   root,
   current,
-  changeCurrent
+  changeCurrent,
+  gutter = 15,
+  backboneGutter = 20,
+  verticalSpace = 50,
+  regularCircleRadius = 4,
+  backboneCircleRadius = 5,
+  regularCircleStroke = 3,
+  backboneCircleStroke = 3,
+  sideOffset = 200,
+  topOffset = 30,
+  textSize = 15
 }: ProvVisProps) => {
+  const [first, setFirst] = useState(true);
+
+  useEffect(() => {
+    setFirst(false);
+  }, []);
+
   const nodeList = Object.values(nodeMap).filter(
     d => d.metadata.createdOn! >= nodeMap[root].metadata.createdOn!
   );
@@ -53,67 +84,80 @@ const ProvVis: FC<ProvVisProps> = ({
   const stratifiedMap: StratifiedMap = {};
 
   stratifiedList.forEach(c => (stratifiedMap[c.id!] = c));
-  const currentPath = treeLayout(stratifiedMap, stratifiedList, current, root);
-
-  const adjustedWidth = width * 0.8;
-  const adjustedHeight = height * 0.8;
-
-  console.log(stratifiedList);
+  treeLayout(stratifiedMap, current, root);
 
   const links = stratifiedTree.links();
+
+  const duration = 600;
+
+  const xOffset = gutter;
+  const yOffset = verticalSpace;
 
   return (
     <div id="prov-vis">
       <svg height={height} width={width}>
         <rect height={height} width={width} fill="none" stroke="black" />
-        <g transform={translate(width / 2, (height - adjustedHeight) / 2)}>
-          {stratifiedList.map(d => {
-            const temp: any = d;
-            return (
-              <g key={d.id || ''} transform={translate(-150 * temp.width, 100 * temp.depth)}>
-                <Popup
-                  content={
-                    <div>
-                      <p>Width: {temp.width}</p>
-                      <p>Depth: {temp.depth}</p>
-                      <p>Height: {temp.height}</p>
-                      <p>ID: {temp.id}</p>
-                      <p>Parent: {temp.parent?.id}</p>
-                    </div>
-                  }
-                  trigger={
-                    <g>
-                      <circle
-                        onClick={() => changeCurrent(d.id)}
-                        r="10"
-                        fill={currentPath.includes(d.id!) ? 'red' : 'blue'}
-                        stroke={d.id! === current ? 'black' : 'none'}
-                        strokeWidth={5}
-                      />
-                      <text textAnchor="middle" transform="rotate(-45)translate(0, 25)">
-                        {temp.data.label}
-                      </text>
-                    </g>
-                  }
-                ></Popup>
-              </g>
-            );
-          })}{' '}
-          {links.map((d: any) => {
-            const { source, target } = d;
+        <g transform={translate(width - sideOffset, topOffset)}>
+          <NodeGroup
+            data={links}
+            keyAccessor={link => `${link.source.id}${link.target.id}`}
+            {...linkTransitions(xOffset, yOffset, backboneGutter - gutter, duration)}
+          >
+            {linkArr => (
+              <>
+                {linkArr.map(link => {
+                  const { key, state } = link;
 
-            return (
-              <g key={`${source.id}${target.id}}`}>
-                <line
-                  x1={-150 * source.width}
-                  x2={-150 * target.width}
-                  y1={100 * source.depth}
-                  y2={100 * target.depth}
-                  stroke="black"
-                />
-              </g>
-            );
-          })}
+                  return (
+                    <g key={key}>
+                      <Link {...state} className={treeColor(true)} />
+                    </g>
+                  );
+                })}
+              </>
+            )}
+          </NodeGroup>
+          <NodeGroup
+            data={stratifiedList}
+            keyAccessor={d => d.id}
+            {...nodeTransitions(xOffset, yOffset, backboneGutter - gutter, duration)}
+          >
+            {nodes => {
+              return (
+                <>
+                  {nodes.map(node => {
+                    const { data: d, key, state } = node;
+                    return (
+                      <g
+                        key={key}
+                        onClick={() => changeCurrent(d.id)}
+                        transform={translate(state.x, state.y)}
+                      >
+                        {d.width === 0 ? (
+                          <BackboneNode
+                            textSize={textSize}
+                            radius={backboneCircleRadius}
+                            strokeWidth={backboneCircleStroke}
+                            duration={duration}
+                            first={first}
+                            current={current === d.id}
+                            node={d.data}
+                          />
+                        ) : (
+                          <circle
+                            onClick={() => changeCurrent(d.id)}
+                            r={regularCircleRadius}
+                            strokeWidth={regularCircleStroke}
+                            className={treeColor(false)}
+                          />
+                        )}
+                      </g>
+                    );
+                  })}
+                </>
+              );
+            }}
+          </NodeGroup>
         </g>
       </svg>
     </div>
