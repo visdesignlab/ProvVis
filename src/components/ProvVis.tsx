@@ -17,13 +17,14 @@ import { treeColor } from './Styles';
 import nodeTransitions from './NodeTransitions';
 import linkTransitions from './LinkTransitions';
 import { style } from 'typestyle';
+import { EventConfig } from '../Utils/EventConfig';
 
-interface ProvVisProps {
-  graph: ProvenanceGraph<unknown>;
+interface ProvVisProps<T, S extends string> {
+  graph: ProvenanceGraph<T, S>;
   root: NodeID;
   sideOffset?: number;
   current: NodeID;
-  nodeMap: Nodes<unknown>;
+  nodeMap: Nodes<T, S>;
   changeCurrent: (id: NodeID) => void;
   gutter?: number;
   backboneGutter?: number;
@@ -38,12 +39,13 @@ interface ProvVisProps {
   width?: number;
   linkWidth?: number;
   duration?: number;
+  eventConfig?: EventConfig<S>;
 }
 
-export type StratifiedMap = { [key: string]: HierarchyNode<ProvenanceNode<unknown>> };
-export type StratifiedList = HierarchyNode<ProvenanceNode<unknown>>[];
+export type StratifiedMap<T, S> = { [key: string]: HierarchyNode<ProvenanceNode<T, S>> };
+export type StratifiedList<T, S> = HierarchyNode<ProvenanceNode<T, S>>[];
 
-const ProvVis: FC<ProvVisProps> = ({
+function ProvVis<T, S extends string>({
   nodeMap,
   width = 1500,
   height = 2000,
@@ -61,8 +63,9 @@ const ProvVis: FC<ProvVisProps> = ({
   topOffset = 30,
   textSize = 15,
   linkWidth = 4,
-  duration = 600
-}: ProvVisProps) => {
+  duration = 600,
+  eventConfig
+}: ProvVisProps<T, S>) {
   const [first, setFirst] = useState(true);
 
   useEffect(() => {
@@ -73,7 +76,7 @@ const ProvVis: FC<ProvVisProps> = ({
     d => d.metadata.createdOn! >= nodeMap[root].metadata.createdOn!
   );
 
-  const strat = stratify<ProvenanceNode<unknown>>()
+  const strat = stratify<ProvenanceNode<T, S>>()
     .id(d => d.id)
     .parentId(d => {
       if (d.id === root) return null;
@@ -85,8 +88,8 @@ const ProvVis: FC<ProvVisProps> = ({
     });
 
   const stratifiedTree = strat(nodeList);
-  const stratifiedList: StratifiedList = stratifiedTree.descendants();
-  const stratifiedMap: StratifiedMap = {};
+  const stratifiedList: StratifiedList<T, S> = stratifiedTree.descendants();
+  const stratifiedMap: StratifiedMap<T, S> = {};
 
   stratifiedList.forEach(c => (stratifiedMap[c.id!] = c));
   treeLayout(stratifiedMap, current, root);
@@ -95,6 +98,22 @@ const ProvVis: FC<ProvVisProps> = ({
 
   const xOffset = gutter;
   const yOffset = verticalSpace;
+
+  function regularGlyph(node: ProvenanceNode<T, S>) {
+    if (eventConfig) {
+      const eventType = node.metadata.type;
+      if (eventType && eventType in eventConfig && eventType !== 'Root') {
+        return eventConfig[eventType].regularGlyph;
+      }
+    }
+    return (
+      <circle
+        r={regularCircleRadius}
+        strokeWidth={regularCircleStroke}
+        className={treeColor(false)}
+      />
+    );
+  }
 
   return (
     <div className={container} id="prov-vis">
@@ -145,14 +164,10 @@ const ProvVis: FC<ProvVisProps> = ({
                             first={first}
                             current={current === d.id}
                             node={d.data}
+                            eventConfig={eventConfig}
                           />
                         ) : (
-                          <circle
-                            onClick={() => changeCurrent(d.id)}
-                            r={regularCircleRadius}
-                            strokeWidth={regularCircleStroke}
-                            className={treeColor(false)}
-                          />
+                          <g onClick={() => changeCurrent(d.id)}>{regularGlyph(d.data)}</g>
                         )}
                       </g>
                     );
@@ -165,7 +180,7 @@ const ProvVis: FC<ProvVisProps> = ({
       </svg>
     </div>
   );
-};
+}
 
 export default ProvVis;
 

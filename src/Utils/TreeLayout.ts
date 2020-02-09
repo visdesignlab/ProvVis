@@ -4,13 +4,13 @@ import { ProvenanceNode } from '@visdesignlab/provenance-lib-core';
 
 export type TreeNode = HierarchyNode<unknown>;
 
-export interface ExtendedHierarchyNode extends HierarchyNode<ProvenanceNode<unknown>> {
+export interface ExtendedHierarchyNode<T, S> extends HierarchyNode<ProvenanceNode<T, S>> {
   column: number;
 }
 
-export type ExtendedStratifiedMap = { [key: string]: ExtendedHierarchyNode };
+export type ExtendedStratifiedMap<T, S> = { [key: string]: ExtendedHierarchyNode<T, S> };
 
-export function treeLayout(nodes: StratifiedMap, current: string, root: string) {
+export function treeLayout<T, S>(nodes: StratifiedMap<T, S>, current: string, root: string) {
   const depthMap: { [key: string]: any } = {};
 
   const currentPath = getPathTo(nodes, root, current);
@@ -20,7 +20,7 @@ export function treeLayout(nodes: StratifiedMap, current: string, root: string) 
   return currentPath;
 }
 
-function DFS(nodes: StratifiedMap, node: string, depthMap: any, currentPath: string[]) {
+function DFS<T, S>(nodes: StratifiedMap<T, S>, node: string, depthMap: any, currentPath: string[]) {
   let explored = new Set();
 
   let toExplore = [];
@@ -54,7 +54,7 @@ function DFS(nodes: StratifiedMap, node: string, depthMap: any, currentPath: str
   }
 }
 
-export function getPathTo(nodes: StratifiedMap, from: string, to: string): string[] {
+export function getPathTo<T, S>(nodes: StratifiedMap<T, S>, from: string, to: string): string[] {
   const path: string[] = [];
 
   search(nodes, from, to, path);
@@ -62,7 +62,7 @@ export function getPathTo(nodes: StratifiedMap, from: string, to: string): strin
   return [from, ...path.reverse()];
 }
 
-function search(nodes: StratifiedMap, node: string, final: string, path: string[]) {
+function search<T, S>(nodes: StratifiedMap<T, S>, node: string, final: string, path: string[]) {
   if (!nodes[node]) return false;
 
   if (node === final) {

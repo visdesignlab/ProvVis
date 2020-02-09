@@ -5,6 +5,7 @@ import { Button } from 'semantic-ui-react';
 import { inject, observer, Provider } from 'mobx-react';
 import { observable } from 'mobx';
 import 'semantic-ui-css/semantic.min.css';
+import { EventConfig } from '../Utils/EventConfig';
 
 export default { title: 'ProvVis' };
 
@@ -20,10 +21,12 @@ const defaultState: DemoState = {
   tasks: []
 };
 
-const prov = initProvenance<DemoState>(defaultState);
+type Events = 'Add Task';
+
+const prov = initProvenance<DemoState, Events>(defaultState);
 
 class DemoStore {
-  @observable graph: ProvenanceGraph<DemoState> = prov.graph();
+  @observable graph: ProvenanceGraph<DemoState, Events> = prov.graph();
   @observable tasks: string[] = [];
   @observable isRoot: boolean = false;
   @observable isLatest: boolean = false;
@@ -51,10 +54,15 @@ prov.addObserver(['tasks'], (state?: DemoState) => {
 let taskNo: number = 1;
 
 const addTask = () => {
-  prov.applyAction(`Adding task #: ${taskNo}`, (state: DemoState) => {
-    state.tasks.push(`Task ${taskNo}`);
-    return state;
-  });
+  prov.applyAction(
+    `Adding task #: ${taskNo}`,
+    (state: DemoState) => {
+      state.tasks.push(`Task ${taskNo}`);
+      return state;
+    },
+    undefined,
+    { type: 'Add Task' }
+  );
 
   taskNo++;
 };
@@ -65,6 +73,35 @@ const goToNode = (nodeId: NodeID) => {
   prov.goToNode(nodeId);
 };
 
+const eventConfig: EventConfig<Events> = {
+  'Add Task': {
+    backboneGlyph: (
+      <g>
+        <circle r="12" fill="white" stroke="#ccc" strokeWidth="2" />
+        <text fontSize="20" dominantBaseline="middle" textAnchor="middle" fill="#ccc">
+          A
+        </text>
+      </g>
+    ),
+    currentGlyph: (
+      <g>
+        <circle r="12" fill="white" stroke="#ccc" strokeWidth="2" />
+        <text fontSize="20" dominantBaseline="middle" textAnchor="middle" fill="#f00">
+          A
+        </text>
+      </g>
+    ),
+    regularGlyph: (
+      <g>
+        <circle r="8" fill="white" stroke="#ccc" strokeWidth="2" />
+        <text fontSize="10" dominantBaseline="middle" textAnchor="middle" fill="#ccc">
+          A
+        </text>
+      </g>
+    )
+  }
+};
+
 const BaseComponent: FC<Props> = ({ store }: Props) => {
   const { graph, isRoot, isLatest } = store!;
   const { root, nodes, current } = graph;
@@ -73,16 +110,17 @@ const BaseComponent: FC<Props> = ({ store }: Props) => {
     <>
       <ProvVis
         width={500}
-        height={450}
-        sideOffset={350}
+        height={800}
+        sideOffset={200}
         graph={graph}
         root={root}
         current={current}
         nodeMap={nodes}
         changeCurrent={goToNode}
-        gutter={15}
+        gutter={20}
         backboneGutter={40}
-        verticalSpace={30}
+        verticalSpace={50}
+        eventConfig={eventConfig}
       />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Button.Group>

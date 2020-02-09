@@ -3,27 +3,42 @@ import translate from '../Utils/translate';
 import { ProvenanceNode } from '@visdesignlab/provenance-lib-core';
 import { treeColor } from './Styles';
 import { Animate } from 'react-move';
+import { EventConfig } from '../Utils/EventConfig';
 
-interface BackboneNodeProps {
+interface BackboneNodeProps<T, S extends string> {
   first: boolean;
   current: boolean;
   duration: number;
-  node: ProvenanceNode<unknown>;
+  node: ProvenanceNode<T, S>;
   radius: number;
   strokeWidth: number;
   textSize: number;
+  eventConfig?: EventConfig<S>;
 }
 
-const BackboneNode: FC<BackboneNodeProps> = ({
+function BackboneNode<T, S extends string>({
   first,
   current,
   node,
   duration,
   radius,
   strokeWidth,
-  textSize
-}: BackboneNodeProps) => {
+  textSize,
+  eventConfig
+}: BackboneNodeProps<T, S>) {
   const padding = 15;
+
+  let glyph = <circle className={treeColor(current)} r={radius} strokeWidth={strokeWidth} />;
+
+  if (eventConfig) {
+    const eventType = node.metadata.type;
+    if (eventType && eventType in eventConfig && eventType !== 'Root') {
+      const { currentGlyph, backboneGlyph } = eventConfig[eventType];
+      glyph = (
+        <g fontWeight={current ? 'bold' : 'none'}>{current ? currentGlyph : backboneGlyph}</g>
+      );
+    }
+  }
 
   return (
     <Animate
@@ -32,7 +47,7 @@ const BackboneNode: FC<BackboneNodeProps> = ({
     >
       {state => (
         <>
-          <circle className={treeColor(current)} r={radius} strokeWidth={strokeWidth} />
+          {glyph}
           <g style={{ opacity: state.opacity }} transform={translate(padding, 0)}>
             <Label
               label={node.label}
@@ -46,7 +61,7 @@ const BackboneNode: FC<BackboneNodeProps> = ({
       )}
     </Animate>
   );
-};
+}
 
 export default BackboneNode;
 
