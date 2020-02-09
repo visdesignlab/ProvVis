@@ -6,28 +6,30 @@ import { inject, observer, Provider } from 'mobx-react';
 import { observable } from 'mobx';
 import 'semantic-ui-css/semantic.min.css';
 import { EventConfig } from '../Utils/EventConfig';
+import { AddTaskGlyph, ChangeTaskGlyph } from './Nodes';
 
 export default { title: 'ProvVis' };
 
-interface Props {
-  store?: any;
+interface Task {
+  key: number;
+  desc: string;
 }
 
 interface DemoState {
-  tasks: string[];
+  tasks: Task[];
 }
 
 const defaultState: DemoState = {
   tasks: []
 };
 
-type Events = 'Add Task';
+type Events = 'Add Task' | 'Change Task';
 
 const prov = initProvenance<DemoState, Events>(defaultState);
 
 class DemoStore {
   @observable graph: ProvenanceGraph<DemoState, Events> = prov.graph();
-  @observable tasks: string[] = [];
+  @observable tasks: Task[] = defaultState.tasks;
   @observable isRoot: boolean = false;
   @observable isLatest: boolean = false;
 }
@@ -53,11 +55,14 @@ prov.addObserver(['tasks'], (state?: DemoState) => {
 
 let taskNo: number = 1;
 
-const addTask = () => {
+const addTask = (desc: string = 'Random Task') => {
   prov.applyAction(
     `Adding task #: ${taskNo}`,
     (state: DemoState) => {
-      state.tasks.push(`Task ${taskNo}`);
+      state.tasks.push({
+        key: taskNo,
+        desc
+      });
       return state;
     },
     undefined,
@@ -67,43 +72,47 @@ const addTask = () => {
   taskNo++;
 };
 
+function updateTask(taskId: number, desc: string = 'Changed String ') {
+  prov.applyAction(
+    `Changing task #: ${taskId}`,
+    (state: DemoState) => {
+      const idx = state.tasks.findIndex(d => d.key === taskId);
+      if (idx !== -1) {
+        state.tasks[idx].desc = desc;
+      }
+      return state;
+    },
+    undefined,
+    { type: 'Change Task' }
+  );
+}
+
 const undo = () => prov.goBackOneStep();
 const redo = () => prov.goForwardOneStep();
 const goToNode = (nodeId: NodeID) => {
   prov.goToNode(nodeId);
 };
 
+/////////////////////////////////////////////////////////////////
+
 const eventConfig: EventConfig<Events> = {
   'Add Task': {
-    backboneGlyph: (
-      <g>
-        <circle r="12" fill="white" stroke="#ccc" strokeWidth="2" />
-        <text fontSize="20" dominantBaseline="middle" textAnchor="middle" fill="#ccc">
-          A
-        </text>
-      </g>
-    ),
-    currentGlyph: (
-      <g>
-        <circle r="12" fill="white" stroke="#ccc" strokeWidth="2" />
-        <text fontSize="20" dominantBaseline="middle" textAnchor="middle" fill="#f00">
-          A
-        </text>
-      </g>
-    ),
-    regularGlyph: (
-      <g>
-        <circle r="8" fill="white" stroke="#ccc" strokeWidth="2" />
-        <text fontSize="10" dominantBaseline="middle" textAnchor="middle" fill="#ccc">
-          A
-        </text>
-      </g>
-    )
+    backboneGlyph: <AddTaskGlyph size={14} />,
+    currentGlyph: <AddTaskGlyph size={20} />,
+    regularGlyph: <AddTaskGlyph size={12} />
+  },
+  'Change Task': {
+    backboneGlyph: <ChangeTaskGlyph size={14} />,
+    currentGlyph: <ChangeTaskGlyph size={20} />,
+    regularGlyph: <ChangeTaskGlyph size={12} />
   }
 };
 
+interface Props {
+  store?: any;
+}
 const BaseComponent: FC<Props> = ({ store }: Props) => {
-  const { graph, isRoot, isLatest } = store!;
+  const { graph, isRoot, isLatest, tasks } = store!;
   const { root, nodes, current } = graph;
 
   return (
@@ -132,8 +141,25 @@ const BaseComponent: FC<Props> = ({ store }: Props) => {
             Redo
           </Button>
           <Button.Or></Button.Or>
-          <Button onClick={addTask}>Add Task</Button>
+          <Button
+            onClick={() => {
+              addTask(Math.random().toString());
+            }}
+          >
+            Add Task
+          </Button>
         </Button.Group>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div>
+          {tasks.map((d: any) => {
+            return (
+              <div key={d.key}>
+                {d.key} --- {d.desc}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </>
   );
@@ -178,6 +204,12 @@ const setupInital = () => {
   addTask();
   addTask();
   addTask();
+  undo();
+  undo();
+  undo();
+  updateTask(1);
+  updateTask(12);
+  updateTask(14);
 };
 
 setupInital();
