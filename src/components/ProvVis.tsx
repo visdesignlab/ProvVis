@@ -16,16 +16,15 @@ import Link from './Link';
 import { treeColor } from './Styles';
 import nodeTransitions from './NodeTransitions';
 import linkTransitions from './LinkTransitions';
+import { style } from 'typestyle';
 
 interface ProvVisProps {
   graph: ProvenanceGraph<unknown>;
   root: NodeID;
-  height?: number;
-  width?: number;
   sideOffset?: number;
   current: NodeID;
   nodeMap: Nodes<unknown>;
-  changeCurrent: any;
+  changeCurrent: (id: NodeID) => void;
   gutter?: number;
   backboneGutter?: number;
   verticalSpace?: number;
@@ -35,6 +34,10 @@ interface ProvVisProps {
   backboneCircleStroke?: number;
   topOffset?: number;
   textSize?: number;
+  height?: number;
+  width?: number;
+  linkWidth?: number;
+  duration?: number;
 }
 
 export type StratifiedMap = { [key: string]: HierarchyNode<ProvenanceNode<unknown>> };
@@ -56,7 +59,9 @@ const ProvVis: FC<ProvVisProps> = ({
   backboneCircleStroke = 3,
   sideOffset = 200,
   topOffset = 30,
-  textSize = 15
+  textSize = 15,
+  linkWidth = 4,
+  duration = 600
 }: ProvVisProps) => {
   const [first, setFirst] = useState(true);
 
@@ -88,13 +93,11 @@ const ProvVis: FC<ProvVisProps> = ({
 
   const links = stratifiedTree.links();
 
-  const duration = 600;
-
   const xOffset = gutter;
   const yOffset = verticalSpace;
 
   return (
-    <div id="prov-vis">
+    <div className={container} id="prov-vis">
       <svg height={height} width={width}>
         <rect height={height} width={width} fill="none" stroke="black" />
         <g transform={translate(width - sideOffset, topOffset)}>
@@ -110,7 +113,7 @@ const ProvVis: FC<ProvVisProps> = ({
 
                   return (
                     <g key={key}>
-                      <Link {...state} className={treeColor(true)} />
+                      <Link {...state} className={treeColor(true)} strokeWidth={linkWidth} />
                     </g>
                   );
                 })}
@@ -165,3 +168,10 @@ const ProvVis: FC<ProvVisProps> = ({
 };
 
 export default ProvVis;
+
+const container = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  overflow: 'auto'
+});
