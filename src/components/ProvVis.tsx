@@ -26,8 +26,8 @@ interface ProvVisProps<T, S extends string> {
   current: NodeID;
   nodeMap: Nodes<T, S>;
   changeCurrent: (id: NodeID) => void;
-  gutter?: number;
   backboneGutter?: number;
+  gutter?: number;
   verticalSpace?: number;
   regularCircleRadius?: number;
   backboneCircleRadius?: number;
