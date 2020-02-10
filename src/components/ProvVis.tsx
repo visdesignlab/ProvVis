@@ -25,7 +25,7 @@ interface ProvVisProps<T, S extends string> {
   sideOffset?: number;
   current: NodeID;
   nodeMap: Nodes<T, S>;
-  changeCurrent: (id: NodeID) => void;
+  changeCurrent?: (id: NodeID) => void;
   backboneGutter?: number;
   gutter?: number;
   verticalSpace?: number;
@@ -167,7 +167,15 @@ function ProvVis<T, S extends string>({
                             eventConfig={eventConfig}
                           />
                         ) : (
-                          <g onClick={() => changeCurrent(d.id)}>{regularGlyph(d.data)}</g>
+                          <g
+                            onClick={() => {
+                              if (changeCurrent) {
+                                changeCurrent(d.id);
+                              }
+                            }}
+                          >
+                            {regularGlyph(d.data)}
+                          </g>
                         )}
                       </g>
                     );
