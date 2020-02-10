@@ -152,7 +152,11 @@ function ProvVis<T, S extends string>({
                     return (
                       <g
                         key={key}
-                        onClick={() => changeCurrent(d.id)}
+                        onClick={() => {
+                          if (changeCurrent) {
+                            changeCurrent(d.id);
+                          }
+                        }}
                         transform={translate(state.x, state.y)}
                       >
                         {d.width === 0 ? (
@@ -167,15 +171,7 @@ function ProvVis<T, S extends string>({
                             eventConfig={eventConfig}
                           />
                         ) : (
-                          <g
-                            onClick={() => {
-                              if (changeCurrent) {
-                                changeCurrent(d.id);
-                              }
-                            }}
-                          >
-                            {regularGlyph(d.data)}
-                          </g>
+                          <g>{regularGlyph(d.data)}</g>
                         )}
                       </g>
                     );
