@@ -1,3 +1,4 @@
-import ProvVis from './components/ProvVis'
+import ProvVis from './components/ProvVis';
+import { EventConfig, Config } from './Utils/EventConfig';
 
-export { ProvVis }
+export { ProvVis, EventConfig, Config };
