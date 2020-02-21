@@ -6,6 +6,7 @@ import { inject, observer, Provider } from 'mobx-react';
 import { observable } from 'mobx';
 import 'semantic-ui-css/semantic.min.css';
 import { EventConfig } from '../Utils/EventConfig';
+import { BundleMap } from '../Utils/BundleMap';
 import { AddTaskGlyph, ChangeTaskGlyph } from './Nodes';
 
 export default { title: 'ProvVis' };
@@ -36,6 +37,13 @@ class DemoStore {
 
 const store = new DemoStore();
 
+let map:BundleMap;
+let idList:string[] = [];
+
+const popup = (nodeId: NodeID) => {
+  return <p>{nodeId}</p>;
+}
+
 prov.addGlobalObserver(() => {
   const current = prov.current();
 
@@ -48,7 +56,26 @@ prov.addGlobalObserver(() => {
 });
 
 prov.addObserver(['tasks'], (state?: DemoState) => {
+
+  idList.push(prov.graph().current);
+  if(idList.length > 30)
+  {
+    map = {
+      [idList[12]]: {
+        metadata: undefined,
+        bundleLabel: "Clustering Label",
+        bunchedNodes: [idList[10], idList[11]]
+      },
+
+      [idList[24]]: {
+        metadata: undefined,
+        bundleLabel: "Clustering Label",
+        bunchedNodes: [idList[22], idList[23], idList[21]]
+      }
+    };
+  }
   if (state) {
+
     store.tasks = [...state.tasks];
   }
 });
@@ -99,12 +126,14 @@ const eventConfig: EventConfig<Events> = {
   'Add Task': {
     backboneGlyph: <AddTaskGlyph size={14} />,
     currentGlyph: <AddTaskGlyph size={20} />,
-    regularGlyph: <AddTaskGlyph size={12} />
+    regularGlyph: <AddTaskGlyph size={12} />,
+    bundleGlyph:  <AddTaskGlyph size={10} />
   },
   'Change Task': {
     backboneGlyph: <ChangeTaskGlyph size={14} />,
     currentGlyph: <ChangeTaskGlyph size={20} />,
-    regularGlyph: <ChangeTaskGlyph size={12} />
+    regularGlyph: <ChangeTaskGlyph size={12} />,
+    bundleGlyph: <ChangeTaskGlyph size={10} />
   }
 };
 
@@ -129,6 +158,10 @@ const BaseComponent: FC<Props> = ({ store }: Props) => {
         gutter={20}
         backboneGutter={40}
         verticalSpace={50}
+        clusterVerticalSpace={25}
+        bundleMap={map}
+        clusterLabels={false}
+        popupContent={popup}
         eventConfig={eventConfig}
       />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

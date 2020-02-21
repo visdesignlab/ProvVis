@@ -4,6 +4,7 @@ import { ProvenanceNode } from '@visdesignlab/provenance-lib-core';
 import { treeColor } from './Styles';
 import { Animate } from 'react-move';
 import { EventConfig } from '../Utils/EventConfig';
+import { BundleMap } from '../Utils/BundleMap';
 
 interface BackboneNodeProps<T, S extends string> {
   first: boolean;
@@ -13,6 +14,9 @@ interface BackboneNodeProps<T, S extends string> {
   radius: number;
   strokeWidth: number;
   textSize: number;
+  bundleMap?: BundleMap;
+  bundleNodeList:string[];
+  clusterLabels:boolean;
   eventConfig?: EventConfig<S>;
 }
 
@@ -24,6 +28,9 @@ function BackboneNode<T, S extends string>({
   radius,
   strokeWidth,
   textSize,
+  bundleMap,
+  bundleNodeList,
+  clusterLabels,
   eventConfig
 }: BackboneNodeProps<T, S>) {
   const padding = 15;
@@ -33,11 +40,30 @@ function BackboneNode<T, S extends string>({
   if (eventConfig) {
     const eventType = node.metadata.type;
     if (eventType && eventType in eventConfig && eventType !== 'Root') {
-      const { currentGlyph, backboneGlyph } = eventConfig[eventType];
-      glyph = (
-        <g fontWeight={current ? 'bold' : 'none'}>{current ? currentGlyph : backboneGlyph}</g>
-      );
+      const { bundleGlyph, currentGlyph, backboneGlyph } = eventConfig[eventType];
+      if(bundleNodeList.includes(node.id) || (bundleMap && Object.keys(bundleMap).includes(node.id)))
+      {
+        glyph = <g fontWeight={'none'}>{bundleGlyph}</g>
+      }
+      else if(current)
+      {
+        glyph = <g fontWeight={'bold'}>{currentGlyph}</g>
+      }
+      else{
+        glyph = <g fontWeight={'none'}>{backboneGlyph}</g>
+      }
     }
+  }
+
+  let label = '';
+
+  if(bundleMap && Object.keys(bundleMap).includes(node.id) && clusterLabels)
+  {
+    label = bundleMap[node.id].bundleLabel;
+  }
+  else if(!bundleNodeList.includes(node.id) || !clusterLabels)
+  {
+    label = node.label;
   }
 
   return (
@@ -50,7 +76,7 @@ function BackboneNode<T, S extends string>({
           {glyph}
           <g style={{ opacity: state.opacity }} transform={translate(padding, 0)}>
             <Label
-              label={node.label}
+              label={label}
               dominantBaseline="middle"
               textAnchor="start"
               fontSize={textSize}

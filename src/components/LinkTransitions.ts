@@ -1,8 +1,11 @@
 export default function linkTransitions(
   xOffset: number,
   yOffset: number,
+  clusterOffset: number,
   backboneOffset: number,
-  duration: number = 500
+  duration: number = 500,
+  nodeList: any[],
+  clusteredList: string[]
 ) {
   xOffset = -xOffset;
   backboneOffset = -backboneOffset;
@@ -11,22 +14,56 @@ export default function linkTransitions(
   };
 
   const enter = (data: any) => {
+    let clusteredNodesInFront = 0;
+
+    for (let i = 0; i < nodeList.length; i++) {
+      if (
+        data.source.width == 0 &&
+        data.target.width == 0 &&
+        nodeList[i].width == 0 &&
+        nodeList[i].depth <= data.target.depth &&
+        clusteredList.includes(nodeList[i].id)
+      ) {
+        clusteredNodesInFront++;
+      }
+    }
+
+    clusteredNodesInFront =
+      clusteredNodesInFront == 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
+
     const { source, target } = data;
     const x1 = xOffset * source.width;
     const x2 = xOffset * target.width;
-    const y1 = yOffset * source.depth;
-    const y2 = yOffset * target.depth;
+    const y1 = yOffset * source.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
+    const y2 = yOffset * target.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
 
     return { x1, x2, y1, y2, opacity: 1, timing: { duration } };
   };
 
   const update = (data: any) => {
+    let clusteredNodesInFront = 0;
+
+    for (let i = 0; i < nodeList.length; i++) {
+      if (
+        data.source.width == 0 &&
+        data.target.width == 0 &&
+        nodeList[i].width == 0 &&
+        nodeList[i].depth <= data.target.depth &&
+        clusteredList.includes(nodeList[i].id)
+      ) {
+        clusteredNodesInFront++;
+      }
+    }
+
+    clusteredNodesInFront =
+      clusteredNodesInFront == 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
+
     const { source, target } = data;
     const x1 = getX(source.width, xOffset, backboneOffset);
     const x2 = getX(target.width, xOffset, backboneOffset);
 
-    const y1 = yOffset * source.depth;
-    const y2 = yOffset * target.depth;
+    const y1 = yOffset * source.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
+    const y2 = yOffset * target.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
     return {
       x1: [x1],
       y1: [y1],

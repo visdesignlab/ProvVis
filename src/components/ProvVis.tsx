@@ -16,8 +16,13 @@ import Link from './Link';
 import { treeColor } from './Styles';
 import nodeTransitions from './NodeTransitions';
 import linkTransitions from './LinkTransitions';
+import bundleTransitions from './BundleTransitions';
+
 import { style } from 'typestyle';
 import { EventConfig } from '../Utils/EventConfig';
+import { BundleMap } from '../Utils/BundleMap';
+import { Popup } from 'semantic-ui-react'
+
 
 interface ProvVisProps<T, S extends string> {
   graph: ProvenanceGraph<T, S>;
@@ -29,6 +34,7 @@ interface ProvVisProps<T, S extends string> {
   backboneGutter?: number;
   gutter?: number;
   verticalSpace?: number;
+  clusterVerticalSpace?: number;
   regularCircleRadius?: number;
   backboneCircleRadius?: number;
   regularCircleStroke?: number;
@@ -39,7 +45,10 @@ interface ProvVisProps<T, S extends string> {
   width?: number;
   linkWidth?: number;
   duration?: number;
+  clusterLabels?: boolean;
+  bundleMap?: BundleMap;
   eventConfig?: EventConfig<S>;
+  popupContent?: (nodeId:NodeID) => JSX.Element;
 }
 
 export type StratifiedMap<T, S> = { [key: string]: HierarchyNode<ProvenanceNode<T, S>> };
@@ -55,6 +64,7 @@ function ProvVis<T, S extends string>({
   gutter = 15,
   backboneGutter = 20,
   verticalSpace = 50,
+  clusterVerticalSpace = 30,
   regularCircleRadius = 4,
   backboneCircleRadius = 5,
   regularCircleStroke = 3,
@@ -64,7 +74,10 @@ function ProvVis<T, S extends string>({
   textSize = 15,
   linkWidth = 4,
   duration = 600,
-  eventConfig
+  clusterLabels = true,
+  bundleMap,
+  eventConfig,
+  popupContent
 }: ProvVisProps<T, S>) {
   const [first, setFirst] = useState(true);
 
@@ -75,6 +88,7 @@ function ProvVis<T, S extends string>({
   const nodeList = Object.values(nodeMap).filter(
     d => d.metadata.createdOn! >= nodeMap[root].metadata.createdOn!
   );
+
 
   const strat = stratify<ProvenanceNode<T, S>>()
     .id(d => d.id)
@@ -87,9 +101,22 @@ function ProvVis<T, S extends string>({
       }
     });
 
+  const keys = bundleMap ? Object.keys(bundleMap) : [];
+
   const stratifiedTree = strat(nodeList);
   const stratifiedList: StratifiedList<T, S> = stratifiedTree.descendants();
   const stratifiedMap: StratifiedMap<T, S> = {};
+
+  //Find a list of all nodes included in a bundle.
+  let bundledNodes:string[] = [];
+
+  if(bundleMap)
+  {
+    for(let key of keys){
+      bundledNodes = bundledNodes.concat(bundleMap[key].bunchedNodes)
+      bundledNodes.push(key);
+    }
+  }
 
   stratifiedList.forEach(c => (stratifiedMap[c.id!] = c));
   treeLayout(stratifiedMap, current, root);
@@ -121,9 +148,32 @@ function ProvVis<T, S extends string>({
         <rect height={height} width={width} fill="none" stroke="black" />
         <g transform={translate(width - sideOffset, topOffset)}>
           <NodeGroup
+            data={keys}
+            keyAccessor={key => `${key}`}
+            {...bundleTransitions(xOffset, verticalSpace, clusterVerticalSpace,  backboneGutter - gutter, duration, stratifiedMap, stratifiedList, bundledNodes, bundleMap)}
+          >
+            {bundle => (
+              <>
+              {bundle.map(b => {
+                if(bundleMap === undefined || (stratifiedMap[b.key] as any).width != 0)
+                {
+                  return;
+                }
+                const { key, state } = b;
+                return (
+                  <g key={key} transform={translate(state.x - gutter, state.y - clusterVerticalSpace / 2)}>
+                    <rect width={sideOffset - gutter} height={clusterVerticalSpace * (bundleMap[key].bunchedNodes.length+1)} fill='#F0F0F0' stroke='none'>
+                    </rect>
+                  </g>
+                );
+              })}
+              </>
+            )}
+          </NodeGroup>
+          <NodeGroup
             data={links}
             keyAccessor={link => `${link.source.id}${link.target.id}`}
-            {...linkTransitions(xOffset, yOffset, backboneGutter - gutter, duration)}
+            {...linkTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, bundledNodes)}
           >
             {linkArr => (
               <>
@@ -142,14 +192,14 @@ function ProvVis<T, S extends string>({
           <NodeGroup
             data={stratifiedList}
             keyAccessor={d => d.id}
-            {...nodeTransitions(xOffset, yOffset, backboneGutter - gutter, duration)}
+            {...nodeTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, bundledNodes)}
           >
             {nodes => {
               return (
                 <>
                   {nodes.map(node => {
                     const { data: d, key, state } = node;
-                    return (
+                    const popupTrigger =
                       <g
                         key={key}
                         onClick={() => {
@@ -157,7 +207,7 @@ function ProvVis<T, S extends string>({
                             changeCurrent(d.id);
                           }
                         }}
-                        transform={translate(state.x, state.y)}
+                        transform={d.width == 0 ? translate(state.x, state.y) : translate(state.x, state.y)}
                       >
                         {d.width === 0 ? (
                           <BackboneNode
@@ -168,13 +218,24 @@ function ProvVis<T, S extends string>({
                             first={first}
                             current={current === d.id}
                             node={d.data}
+                            bundleMap={bundleMap}
+                            bundleNodeList={bundledNodes}
+                            clusterLabels={clusterLabels}
                             eventConfig={eventConfig}
                           />
                         ) : (
                           <g>{regularGlyph(d.data)}</g>
                         )}
                       </g>
-                    );
+
+                      return (
+                        popupContent !== undefined ?
+                          (
+                            <Popup key = {key} content={popupContent(d.id)} trigger={popupTrigger}/>
+                          ) : (
+                            popupTrigger
+                          )
+                      );
                   })}
                 </>
               );
