@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactChild } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import {
   ProvenanceGraph,
@@ -48,7 +48,7 @@ interface ProvVisProps<T, S extends string> {
   clusterLabels?: boolean;
   bundleMap?: BundleMap;
   eventConfig?: EventConfig<S>;
-  popupContent?: (nodeId:NodeID) => JSX.Element;
+  popupContent?: (nodeId:NodeID) => ReactChild;
 }
 
 export type StratifiedMap<T, S> = { [key: string]: HierarchyNode<ProvenanceNode<T, S>> };
