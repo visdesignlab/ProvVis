@@ -21,8 +21,8 @@ export default function nodeTransitions(
 
     for (let i = 0; i < nodeList.length; i++) {
       if (
-        data.width == 0 &&
-        nodeList[i].width == 0 &&
+        data.width === 0 &&
+        nodeList[i].width === 0 &&
         nodeList[i].depth <= data.depth &&
         clusteredList.includes(nodeList[i].id)
       ) {
@@ -33,7 +33,7 @@ export default function nodeTransitions(
     const x = getX(data.width, xOffset, backboneOffset);
 
     clusteredNodesInFront =
-      clusteredNodesInFront == 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
+      clusteredNodesInFront === 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
 
     let y = yOffset * data.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
 
@@ -50,8 +50,8 @@ export default function nodeTransitions(
 
     for (let i = 0; i < nodeList.length; i++) {
       if (
-        data.width == 0 &&
-        nodeList[i].width == 0 &&
+        data.width === 0 &&
+        nodeList[i].width === 0 &&
         nodeList[i].depth <= data.depth &&
         clusteredList.includes(nodeList[i].id)
       ) {
@@ -62,7 +62,7 @@ export default function nodeTransitions(
     const x = getX(data.width, xOffset, backboneOffset);
 
     clusteredNodesInFront =
-      clusteredNodesInFront == 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
+      clusteredNodesInFront === 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
 
     let y = yOffset * data.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
 

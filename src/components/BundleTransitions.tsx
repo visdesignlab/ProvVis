@@ -42,8 +42,8 @@ export default function bundleTransitions(
 
       for(let i = 0; i < nodeList.length; i++)
       {
-        if(node.width == 0
-          && nodeList[i].width == 0
+        if(node.width === 0
+          && nodeList[i].width === 0
           && nodeList[i].depth <= highestDepth
           && clusteredList.includes(nodeList[i].id))
         {
@@ -52,7 +52,7 @@ export default function bundleTransitions(
       }
     }
 
-    clusteredNodesInFront = clusteredNodesInFront == 0 ? clusteredNodesInFront : clusteredNodesInFront - 1
+    clusteredNodesInFront = clusteredNodesInFront === 0 ? clusteredNodesInFront : clusteredNodesInFront - 1
 
     let y = yOffset * highestDepth - ((yOffset - clusterOffset) * clusteredNodesInFront);
 
@@ -86,8 +86,8 @@ export default function bundleTransitions(
 
       for(let i = 0; i < nodeList.length; i++)
       {
-        if(node.width == 0
-          && nodeList[i].width == 0
+        if(node.width === 0
+          && nodeList[i].width === 0
           && nodeList[i].depth <= highestDepth
           && clusteredList.includes(nodeList[i].id))
         {
@@ -96,7 +96,7 @@ export default function bundleTransitions(
       }
     }
 
-    clusteredNodesInFront = clusteredNodesInFront == 0 ? clusteredNodesInFront : clusteredNodesInFront - 1
+    clusteredNodesInFront = clusteredNodesInFront === 0 ? clusteredNodesInFront : clusteredNodesInFront - 1
 
     let y = yOffset * highestDepth - ((yOffset - clusterOffset) * clusteredNodesInFront);
 

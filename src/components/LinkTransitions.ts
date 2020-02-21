@@ -18,9 +18,9 @@ export default function linkTransitions(
 
     for (let i = 0; i < nodeList.length; i++) {
       if (
-        data.source.width == 0 &&
-        data.target.width == 0 &&
-        nodeList[i].width == 0 &&
+        data.source.width === 0 &&
+        data.target.width === 0 &&
+        nodeList[i].width === 0 &&
         nodeList[i].depth <= data.target.depth &&
         clusteredList.includes(nodeList[i].id)
       ) {
@@ -29,7 +29,7 @@ export default function linkTransitions(
     }
 
     clusteredNodesInFront =
-      clusteredNodesInFront == 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
+      clusteredNodesInFront === 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
 
     const { source, target } = data;
     const x1 = xOffset * source.width;
@@ -45,9 +45,9 @@ export default function linkTransitions(
 
     for (let i = 0; i < nodeList.length; i++) {
       if (
-        data.source.width == 0 &&
-        data.target.width == 0 &&
-        nodeList[i].width == 0 &&
+        data.source.width === 0 &&
+        data.target.width === 0 &&
+        nodeList[i].width === 0 &&
         nodeList[i].depth <= data.target.depth &&
         clusteredList.includes(nodeList[i].id)
       ) {
@@ -56,7 +56,7 @@ export default function linkTransitions(
     }
 
     clusteredNodesInFront =
-      clusteredNodesInFront == 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
+      clusteredNodesInFront === 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
 
     const { source, target } = data;
     const x1 = getX(source.width, xOffset, backboneOffset);

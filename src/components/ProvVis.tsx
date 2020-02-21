@@ -207,7 +207,7 @@ function ProvVis<T, S extends string>({
                             changeCurrent(d.id);
                           }
                         }}
-                        transform={d.width == 0 ? translate(state.x, state.y) : translate(state.x, state.y)}
+                        transform={d.width === 0 ? translate(state.x, state.y) : translate(state.x, state.y)}
                       >
                         {d.width === 0 ? (
                           <BackboneNode
