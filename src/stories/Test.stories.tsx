@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ProvVis } from '../provvis';
-import { ProvenanceGraph, initProvenance, NodeID } from '@visdesignlab/provenance-lib-core';
+import { ProvenanceGraph, initProvenance, NodeID, StateNode } from '@visdesignlab/provenance-lib-core';
 import { Button } from 'semantic-ui-react';
 import { inject, observer, Provider } from 'mobx-react';
 import { observable } from 'mobx';
@@ -20,16 +20,20 @@ interface DemoState {
   tasks: Task[];
 }
 
+interface DemoAnnotation {
+  note: string;
+}
+
 const defaultState: DemoState = {
   tasks: []
 };
 
 type Events = 'Add Task' | 'Change Task';
 
-const prov = initProvenance<DemoState, Events>(defaultState);
+const prov = initProvenance<DemoState, Events, DemoAnnotation>(defaultState);
 
 class DemoStore {
-  @observable graph: ProvenanceGraph<DemoState, Events> = prov.graph();
+  @observable graph: ProvenanceGraph<DemoState, Events, DemoAnnotation> = prov.graph();
   @observable tasks: Task[] = defaultState.tasks;
   @observable isRoot: boolean = false;
   @observable isLatest: boolean = false;
@@ -40,8 +44,8 @@ const store = new DemoStore();
 let map:BundleMap;
 let idList:string[] = [];
 
-const popup = (nodeId: NodeID) => {
-  return <p>{nodeId}</p>;
+const popup = (node: StateNode<DemoState, Events, DemoAnnotation>) => {
+  return <p>{node}</p>;
 }
 
 prov.addGlobalObserver(() => {

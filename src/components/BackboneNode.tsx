@@ -6,11 +6,11 @@ import { Animate } from 'react-move';
 import { EventConfig } from '../Utils/EventConfig';
 import { BundleMap } from '../Utils/BundleMap';
 
-interface BackboneNodeProps<T, S extends string> {
+interface BackboneNodeProps<T, S extends string, A> {
   first: boolean;
   current: boolean;
   duration: number;
-  node: ProvenanceNode<T, S>;
+  node: ProvenanceNode<T, S, A>;
   radius: number;
   strokeWidth: number;
   textSize: number;
@@ -20,7 +20,7 @@ interface BackboneNodeProps<T, S extends string> {
   eventConfig?: EventConfig<S>;
 }
 
-function BackboneNode<T, S extends string>({
+function BackboneNode<T, S extends string, A>({
   first,
   current,
   node,
@@ -32,7 +32,7 @@ function BackboneNode<T, S extends string>({
   bundleNodeList,
   clusterLabels,
   eventConfig
-}: BackboneNodeProps<T, S>) {
+}: BackboneNodeProps<T, S, A>) {
   const padding = 15;
 
   let glyph = <circle className={treeColor(current)} r={radius} strokeWidth={strokeWidth} />;

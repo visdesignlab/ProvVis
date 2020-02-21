@@ -5,7 +5,8 @@ import {
   NodeID,
   Nodes,
   ProvenanceNode,
-  isStateNode
+  isStateNode,
+  StateNode
 } from '@visdesignlab/provenance-lib-core';
 import { stratify, HierarchyNode } from 'd3';
 import { treeLayout } from '../Utils/TreeLayout';
@@ -24,12 +25,12 @@ import { BundleMap } from '../Utils/BundleMap';
 import { Popup } from 'semantic-ui-react'
 
 
-interface ProvVisProps<T, S extends string> {
-  graph: ProvenanceGraph<T, S>;
+interface ProvVisProps<T, S extends string, A> {
+  graph: ProvenanceGraph<T, S, A>;
   root: NodeID;
   sideOffset?: number;
   current: NodeID;
-  nodeMap: Nodes<T, S>;
+  nodeMap: Nodes<T, S, A>;
   changeCurrent?: (id: NodeID) => void;
   backboneGutter?: number;
   gutter?: number;
@@ -48,13 +49,13 @@ interface ProvVisProps<T, S extends string> {
   clusterLabels?: boolean;
   bundleMap?: BundleMap;
   eventConfig?: EventConfig<S>;
-  popupContent?: (nodeId:NodeID) => ReactChild;
+  popupContent?: (nodeId:StateNode<T, S, A>) => ReactChild;
 }
 
-export type StratifiedMap<T, S> = { [key: string]: HierarchyNode<ProvenanceNode<T, S>> };
-export type StratifiedList<T, S> = HierarchyNode<ProvenanceNode<T, S>>[];
+export type StratifiedMap<T, S, A> = { [key: string]: HierarchyNode<ProvenanceNode<T, S, A>> };
+export type StratifiedList<T, S, A> = HierarchyNode<ProvenanceNode<T, S, A>>[];
 
-function ProvVis<T, S extends string>({
+function ProvVis<T, S extends string, A>({
   nodeMap,
   width = 1500,
   height = 2000,
@@ -78,7 +79,7 @@ function ProvVis<T, S extends string>({
   bundleMap,
   eventConfig,
   popupContent
-}: ProvVisProps<T, S>) {
+}: ProvVisProps<T, S, A>) {
   const [first, setFirst] = useState(true);
 
   useEffect(() => {
@@ -90,7 +91,7 @@ function ProvVis<T, S extends string>({
   );
 
 
-  const strat = stratify<ProvenanceNode<T, S>>()
+  const strat = stratify<ProvenanceNode<T, S, A>>()
     .id(d => d.id)
     .parentId(d => {
       if (d.id === root) return null;
@@ -104,8 +105,8 @@ function ProvVis<T, S extends string>({
   const keys = bundleMap ? Object.keys(bundleMap) : [];
 
   const stratifiedTree = strat(nodeList);
-  const stratifiedList: StratifiedList<T, S> = stratifiedTree.descendants();
-  const stratifiedMap: StratifiedMap<T, S> = {};
+  const stratifiedList: StratifiedList<T, S, A> = stratifiedTree.descendants();
+  const stratifiedMap: StratifiedMap<T, S, A> = {};
 
   //Find a list of all nodes included in a bundle.
   let bundledNodes:string[] = [];
@@ -126,7 +127,7 @@ function ProvVis<T, S extends string>({
   const xOffset = gutter;
   const yOffset = verticalSpace;
 
-  function regularGlyph(node: ProvenanceNode<T, S>) {
+  function regularGlyph(node: ProvenanceNode<T, S, A>) {
     if (eventConfig) {
       const eventType = node.metadata.type;
       if (eventType && eventType in eventConfig && eventType !== 'Root') {
