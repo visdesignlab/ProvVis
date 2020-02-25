@@ -5,6 +5,7 @@ import { treeColor } from './Styles';
 import { Animate } from 'react-move';
 import { EventConfig } from '../Utils/EventConfig';
 import { BundleMap } from '../Utils/BundleMap';
+import  findBackboneBundleNodes  from '../Utils/findBackboneBundleNodes';
 
 interface BackboneNodeProps<T, S extends string, A> {
   first: boolean;
@@ -14,8 +15,8 @@ interface BackboneNodeProps<T, S extends string, A> {
   radius: number;
   strokeWidth: number;
   textSize: number;
-  bundleMap?: BundleMap;
-  bundleNodeList:string[];
+  nodeMap:any,
+  bundleMap?:BundleMap
   clusterLabels:boolean;
   eventConfig?: EventConfig<S>;
 }
@@ -28,8 +29,8 @@ function BackboneNode<T, S extends string, A>({
   radius,
   strokeWidth,
   textSize,
+  nodeMap,
   bundleMap,
-  bundleNodeList,
   clusterLabels,
   eventConfig
 }: BackboneNodeProps<T, S, A>) {
@@ -37,11 +38,13 @@ function BackboneNode<T, S extends string, A>({
 
   let glyph = <circle className={treeColor(current)} r={radius} strokeWidth={strokeWidth} />;
 
+  let backboneBundleNodes = findBackboneBundleNodes(nodeMap, bundleMap)
+
   if (eventConfig) {
     const eventType = node.metadata.type;
     if (eventType && eventType in eventConfig && eventType !== 'Root') {
       const { bundleGlyph, currentGlyph, backboneGlyph } = eventConfig[eventType];
-      if(bundleNodeList.includes(node.id) || (bundleMap && Object.keys(bundleMap).includes(node.id)))
+      if(backboneBundleNodes.includes(node.id))
       {
         glyph = <g fontWeight={'none'}>{bundleGlyph}</g>
       }
@@ -61,7 +64,7 @@ function BackboneNode<T, S extends string, A>({
   {
     label = bundleMap[node.id].bundleLabel;
   }
-  else if(!bundleNodeList.includes(node.id) || !clusterLabels)
+  else if(!backboneBundleNodes.includes(node.id) || !clusterLabels)
   {
     label = node.label;
   }

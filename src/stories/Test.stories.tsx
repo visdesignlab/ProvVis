@@ -71,10 +71,10 @@ prov.addObserver(['tasks'], (state?: DemoState) => {
         bunchedNodes: [idList[10], idList[11]]
       },
 
-      [idList[24]]: {
+      [idList[21]]: {
         metadata: undefined,
         bundleLabel: "Clustering Label",
-        bunchedNodes: [idList[22], idList[23], idList[21]]
+        bunchedNodes: [idList[22], idList[23], idList[24]]
       }
     };
   }

@@ -1,6 +1,7 @@
 import { getX } from './LinkTransitions';
 import { BundleMap } from '../Utils/BundleMap';
 import { StratifiedMap } from './ProvVis';
+import  findBackboneBundleNodes  from '../Utils/findBackboneBundleNodes';
 
 
 export default function bundleTransitions(
@@ -11,7 +12,6 @@ export default function bundleTransitions(
   duration: number = 500,
   stratifiedMap:any,
   nodeList:any[],
-  clusteredList:string[],
   bundleMap?:BundleMap
 ) {
 
@@ -22,9 +22,12 @@ export default function bundleTransitions(
   };
 
   const enter = (data: any) => {
+    let validity = true;
     let clusteredNodesInFront = 0;
 
     const x = getX(stratifiedMap[data].width, xOffset, backboneOffset);
+
+    let backboneBundleNodes = findBackboneBundleNodes(stratifiedMap, bundleMap)
 
     let highestDepth = stratifiedMap[data].depth;
 
@@ -32,6 +35,10 @@ export default function bundleTransitions(
     {
       for(let i = 0; i < bundleMap[data].bunchedNodes.length; i++)
       {
+        if(stratifiedMap[bundleMap[data].bunchedNodes[i]].width != 0)
+        {
+          validity = false;
+        }
         if(stratifiedMap[bundleMap[data].bunchedNodes[i]].depth < highestDepth)
         {
           highestDepth = stratifiedMap[bundleMap[data].bunchedNodes[i]].depth;
@@ -45,7 +52,7 @@ export default function bundleTransitions(
         if(node.width === 0
           && nodeList[i].width === 0
           && nodeList[i].depth <= highestDepth
-          && clusteredList.includes(nodeList[i].id))
+          && backboneBundleNodes.includes(nodeList[i].id))
         {
           clusteredNodesInFront++;
         }
@@ -56,19 +63,22 @@ export default function bundleTransitions(
 
     let y = yOffset * highestDepth - ((yOffset - clusterOffset) * clusteredNodesInFront);
 
-
     return {
       x: [x],
       y: [y],
       opactiy: 1,
-      timing: { duration }
+      timing: { duration },
+      validity: validity
     };
   };
 
   const update = (data: any) => {
+    let validity = true;
     let clusteredNodesInFront = 0;
 
     const x = getX(stratifiedMap[data].width, xOffset, backboneOffset);
+
+    let backboneBundleNodes = findBackboneBundleNodes(stratifiedMap, bundleMap)
 
     let highestDepth = stratifiedMap[data].depth;
 
@@ -76,6 +86,10 @@ export default function bundleTransitions(
     {
       for(let i = 0; i < bundleMap[data].bunchedNodes.length; i++)
       {
+        if(stratifiedMap[bundleMap[data].bunchedNodes[i]].width != 0)
+        {
+          validity = false;
+        }
         if(stratifiedMap[bundleMap[data].bunchedNodes[i]].depth < highestDepth)
         {
           highestDepth = stratifiedMap[bundleMap[data].bunchedNodes[i]].depth;
@@ -89,7 +103,7 @@ export default function bundleTransitions(
         if(node.width === 0
           && nodeList[i].width === 0
           && nodeList[i].depth <= highestDepth
-          && clusteredList.includes(nodeList[i].id))
+          && backboneBundleNodes.includes(nodeList[i].id))
         {
           clusteredNodesInFront++;
         }
@@ -100,12 +114,12 @@ export default function bundleTransitions(
 
     let y = yOffset * highestDepth - ((yOffset - clusterOffset) * clusteredNodesInFront);
 
-
     return {
       x: [x],
       y: [y],
       opactiy: 1,
-      timing: { duration }
+      timing: { duration },
+      validity: validity
     };
   };
 

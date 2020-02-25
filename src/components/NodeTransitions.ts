@@ -1,5 +1,7 @@
 import { getX } from './LinkTransitions';
 import { StratifiedList } from './ProvVis';
+import { BundleMap } from '../Utils/BundleMap';
+import findBackboneBundleNodes from '../Utils/findBackboneBundleNodes';
 
 export default function nodeTransitions(
   xOffset: number,
@@ -8,7 +10,8 @@ export default function nodeTransitions(
   backboneOffset: number,
   duration: number = 500,
   nodeList: any[],
-  clusteredList: string[]
+  nodeMap: any,
+  bundleMap?: BundleMap
 ) {
   xOffset = -xOffset;
   backboneOffset = -backboneOffset;
@@ -17,6 +20,8 @@ export default function nodeTransitions(
   };
 
   const enter = (data: any) => {
+    let backboneBundleNodes = findBackboneBundleNodes(nodeMap, bundleMap);
+
     let clusteredNodesInFront = 0;
 
     for (let i = 0; i < nodeList.length; i++) {
@@ -24,7 +29,7 @@ export default function nodeTransitions(
         data.width === 0 &&
         nodeList[i].width === 0 &&
         nodeList[i].depth <= data.depth &&
-        clusteredList.includes(nodeList[i].id)
+        backboneBundleNodes.includes(nodeList[i].id)
       ) {
         clusteredNodesInFront++;
       }
@@ -46,6 +51,8 @@ export default function nodeTransitions(
   };
 
   const update = (data: any) => {
+    let backboneBundleNodes = findBackboneBundleNodes(nodeMap, bundleMap);
+
     let clusteredNodesInFront = 0;
 
     for (let i = 0; i < nodeList.length; i++) {
@@ -53,7 +60,7 @@ export default function nodeTransitions(
         data.width === 0 &&
         nodeList[i].width === 0 &&
         nodeList[i].depth <= data.depth &&
-        clusteredList.includes(nodeList[i].id)
+        backboneBundleNodes.includes(nodeList[i].id)
       ) {
         clusteredNodesInFront++;
       }

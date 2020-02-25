@@ -151,16 +151,18 @@ function ProvVis<T, S extends string, A>({
           <NodeGroup
             data={keys}
             keyAccessor={key => `${key}`}
-            {...bundleTransitions(xOffset, verticalSpace, clusterVerticalSpace,  backboneGutter - gutter, duration, stratifiedMap, stratifiedList, bundledNodes, bundleMap)}
+            {...bundleTransitions(xOffset, verticalSpace, clusterVerticalSpace,  backboneGutter - gutter, duration, stratifiedMap, stratifiedList, bundleMap)}
           >
             {bundle => (
               <>
               {bundle.map(b => {
-                if(bundleMap === undefined || (stratifiedMap[b.key] as any).width != 0)
+                const { key, state } = b;
+                console.log(state);
+                if(bundleMap === undefined || (stratifiedMap[b.key] as any).width != 0 || state.validity == false)
                 {
                   return;
                 }
-                const { key, state } = b;
+
                 return (
                   <g key={key} transform={translate(state.x - gutter, state.y - clusterVerticalSpace / 2)}>
                     <rect width={sideOffset - gutter} height={clusterVerticalSpace * (bundleMap[key].bunchedNodes.length+1)} fill='#F0F0F0' stroke='none'>
@@ -174,7 +176,7 @@ function ProvVis<T, S extends string, A>({
           <NodeGroup
             data={links}
             keyAccessor={link => `${link.source.id}${link.target.id}`}
-            {...linkTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, bundledNodes)}
+            {...linkTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, stratifiedMap, bundleMap)}
           >
             {linkArr => (
               <>
@@ -193,7 +195,7 @@ function ProvVis<T, S extends string, A>({
           <NodeGroup
             data={stratifiedList}
             keyAccessor={d => d.id}
-            {...nodeTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, bundledNodes)}
+            {...nodeTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, stratifiedMap, bundleMap)}
           >
             {nodes => {
               return (
@@ -220,7 +222,7 @@ function ProvVis<T, S extends string, A>({
                             current={current === d.id}
                             node={d.data}
                             bundleMap={bundleMap}
-                            bundleNodeList={bundledNodes}
+                            nodeMap={stratifiedMap}
                             clusterLabels={clusterLabels}
                             eventConfig={eventConfig}
                           />
