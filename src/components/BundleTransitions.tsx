@@ -12,6 +12,8 @@ export default function bundleTransitions(
   duration: number = 500,
   stratifiedMap:any,
   nodeList:any[],
+  annotationOpen:number,
+  annotationHeight:number,
   bundleMap?:BundleMap
 ) {
 
@@ -30,6 +32,7 @@ export default function bundleTransitions(
     let backboneBundleNodes = findBackboneBundleNodes(stratifiedMap, bundleMap)
 
     let highestDepth = stratifiedMap[data].depth;
+    let lowestDepth = stratifiedMap[data].depth;
 
     if(bundleMap)
     {
@@ -42,6 +45,11 @@ export default function bundleTransitions(
         if(stratifiedMap[bundleMap[data].bunchedNodes[i]].depth < highestDepth)
         {
           highestDepth = stratifiedMap[bundleMap[data].bunchedNodes[i]].depth;
+        }
+
+        if(stratifiedMap[bundleMap[data].bunchedNodes[i]].depth > lowestDepth)
+        {
+          lowestDepth = stratifiedMap[bundleMap[data].bunchedNodes[i]].depth;
         }
       }
 
@@ -63,12 +71,26 @@ export default function bundleTransitions(
 
     let y = yOffset * highestDepth - ((yOffset - clusterOffset) * clusteredNodesInFront);
 
+    if(annotationOpen != -1 && highestDepth > annotationOpen)
+    {
+      y += annotationHeight;
+    }
+
+    let height = 0;
+    height = clusterOffset * (bundleMap![data].bunchedNodes.length+1)
+
+    if(annotationOpen !== -1 && annotationOpen >= highestDepth && annotationOpen <= lowestDepth){
+      height += annotationHeight
+    }
+
+
     return {
       x: [x],
       y: [y],
       opactiy: 1,
       timing: { duration },
-      validity: validity
+      validity: validity,
+      height: height
     };
   };
 
@@ -81,6 +103,7 @@ export default function bundleTransitions(
     let backboneBundleNodes = findBackboneBundleNodes(stratifiedMap, bundleMap)
 
     let highestDepth = stratifiedMap[data].depth;
+    let lowestDepth = stratifiedMap[data].depth;
 
     if(bundleMap)
     {
@@ -93,6 +116,11 @@ export default function bundleTransitions(
         if(stratifiedMap[bundleMap[data].bunchedNodes[i]].depth < highestDepth)
         {
           highestDepth = stratifiedMap[bundleMap[data].bunchedNodes[i]].depth;
+        }
+
+        if(stratifiedMap[bundleMap[data].bunchedNodes[i]].depth > lowestDepth)
+        {
+          lowestDepth = stratifiedMap[bundleMap[data].bunchedNodes[i]].depth;
         }
       }
 
@@ -114,12 +142,26 @@ export default function bundleTransitions(
 
     let y = yOffset * highestDepth - ((yOffset - clusterOffset) * clusteredNodesInFront);
 
+    if(annotationOpen != -1 && highestDepth > annotationOpen)
+    {
+      y += annotationHeight;
+    }
+
+    let height = 0;
+    height = clusterOffset * (bundleMap![data].bunchedNodes.length+1)
+
+    if(annotationOpen !== -1 && annotationOpen >= highestDepth && annotationOpen <= lowestDepth){
+      height += annotationHeight
+    }
+
+
     return {
       x: [x],
       y: [y],
       opactiy: 1,
       timing: { duration },
-      validity: validity
+      validity: validity,
+      height: [height]
     };
   };
 

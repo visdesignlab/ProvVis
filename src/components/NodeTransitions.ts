@@ -11,6 +11,8 @@ export default function nodeTransitions(
   duration: number = 500,
   nodeList: any[],
   nodeMap: any,
+  annotationOpen: number,
+  annotationHeight: number,
   bundleMap?: BundleMap
 ) {
   xOffset = -xOffset;
@@ -42,6 +44,10 @@ export default function nodeTransitions(
 
     let y = yOffset * data.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
 
+    if (annotationOpen != -1 && data.depth > annotationOpen && data.width == 0) {
+      y += annotationHeight;
+    }
+
     return {
       x: [x],
       y: [y],
@@ -72,6 +78,10 @@ export default function nodeTransitions(
       clusteredNodesInFront === 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
 
     let y = yOffset * data.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
+
+    if (annotationOpen != -1 && data.depth > annotationOpen && data.width == 0) {
+      y += annotationHeight;
+    }
 
     return {
       x: [x],

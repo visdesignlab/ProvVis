@@ -35,6 +35,7 @@ interface ProvVisProps<T, S extends string, A> {
   backboneGutter?: number;
   gutter?: number;
   verticalSpace?: number;
+  annotationHeight?: number;
   clusterVerticalSpace?: number;
   regularCircleRadius?: number;
   backboneCircleRadius?: number;
@@ -50,6 +51,7 @@ interface ProvVisProps<T, S extends string, A> {
   bundleMap?: BundleMap;
   eventConfig?: EventConfig<S>;
   popupContent?: (nodeId:StateNode<T, S, A>) => ReactChild;
+  annotationContent?: (nodeId:StateNode<T, S, A>) => ReactChild;
 }
 
 export type StratifiedMap<T, S, A> = { [key: string]: HierarchyNode<ProvenanceNode<T, S, A>> };
@@ -65,6 +67,7 @@ function ProvVis<T, S extends string, A>({
   gutter = 15,
   backboneGutter = 20,
   verticalSpace = 50,
+  annotationHeight = 100,
   clusterVerticalSpace = 30,
   regularCircleRadius = 4,
   backboneCircleRadius = 5,
@@ -78,9 +81,12 @@ function ProvVis<T, S extends string, A>({
   clusterLabels = true,
   bundleMap,
   eventConfig,
-  popupContent
+  popupContent,
+  annotationContent
 }: ProvVisProps<T, S, A>) {
   const [first, setFirst] = useState(true);
+  const [annotationOpen, setAnnotationOpen] = useState(-1);
+
 
   useEffect(() => {
     setFirst(false);
@@ -151,13 +157,12 @@ function ProvVis<T, S extends string, A>({
           <NodeGroup
             data={keys}
             keyAccessor={key => `${key}`}
-            {...bundleTransitions(xOffset, verticalSpace, clusterVerticalSpace,  backboneGutter - gutter, duration, stratifiedMap, stratifiedList, bundleMap)}
+            {...bundleTransitions(xOffset, verticalSpace, clusterVerticalSpace,  backboneGutter - gutter, duration, stratifiedMap, stratifiedList, annotationOpen, annotationHeight, bundleMap)}
           >
             {bundle => (
               <>
               {bundle.map(b => {
                 const { key, state } = b;
-                console.log(state);
                 if(bundleMap === undefined || (stratifiedMap[b.key] as any).width != 0 || state.validity == false)
                 {
                   return;
@@ -165,7 +170,7 @@ function ProvVis<T, S extends string, A>({
 
                 return (
                   <g key={key} transform={translate(state.x - gutter, state.y - clusterVerticalSpace / 2)}>
-                    <rect width={sideOffset - gutter} height={clusterVerticalSpace * (bundleMap[key].bunchedNodes.length+1)} fill='#F0F0F0' stroke='none'>
+                    <rect width={sideOffset - gutter} height={state.height} rx='10' ry='10' fill='#F0F0F0' stroke='none'>
                     </rect>
                   </g>
                 );
@@ -176,7 +181,7 @@ function ProvVis<T, S extends string, A>({
           <NodeGroup
             data={links}
             keyAccessor={link => `${link.source.id}${link.target.id}`}
-            {...linkTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, stratifiedMap, bundleMap)}
+            {...linkTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, stratifiedMap, annotationOpen, annotationHeight, bundleMap)}
           >
             {linkArr => (
               <>
@@ -195,7 +200,7 @@ function ProvVis<T, S extends string, A>({
           <NodeGroup
             data={stratifiedList}
             keyAccessor={d => d.id}
-            {...nodeTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, stratifiedMap, bundleMap)}
+            {...nodeTransitions(xOffset, yOffset, clusterVerticalSpace, backboneGutter - gutter, duration, stratifiedList, stratifiedMap, annotationOpen, annotationHeight,  bundleMap)}
           >
             {nodes => {
               return (
@@ -224,21 +229,24 @@ function ProvVis<T, S extends string, A>({
                             bundleMap={bundleMap}
                             nodeMap={stratifiedMap}
                             clusterLabels={clusterLabels}
+                            annotationOpen={annotationOpen}
+                            setAnnotationOpen={setAnnotationOpen}
                             eventConfig={eventConfig}
+                            annotationContent={annotationContent}
+                            popupContent={popupContent}
                           />
                         ) : (
-                          <g>{regularGlyph(d.data)}</g>
+                          (popupContent !== undefined)?
+                            (
+                              <Popup content={popupContent(d)} trigger={<g onClick={() => setAnnotationOpen(-1)}>{regularGlyph(d.data)}</g>}/>
+                            ) : (
+                              <g onClick={() => setAnnotationOpen(-1)}>{regularGlyph(d.data)}</g>
+                            )
+
                         )}
                       </g>
 
-                      return (
-                        popupContent !== undefined ?
-                          (
-                            <Popup key = {key} content={popupContent(d.id)} trigger={popupTrigger}/>
-                          ) : (
-                            popupTrigger
-                          )
-                      );
+                      return popupTrigger;
                   })}
                 </>
               );

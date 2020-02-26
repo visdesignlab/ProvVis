@@ -45,7 +45,19 @@ let map:BundleMap;
 let idList:string[] = [];
 
 const popup = (node: StateNode<DemoState, Events, DemoAnnotation>) => {
-  return <p>{node}</p>;
+
+  return <p>{node.id}</p>;
+}
+
+const annotiation = (node: StateNode<DemoState, Events, DemoAnnotation>) => {
+
+  // console.log(JSON.parse(JSON.stringify(node)))
+
+  return(
+  <g transform='translate(0, 20)'>
+    <rect height='60' width='175' rx="10" ry="10" fill='none' stroke='grey' />;
+    <text x="10" y="35" fontSize=".5em">Depth: {node.id}</text>
+  </g>)
 }
 
 prov.addGlobalObserver(() => {
@@ -163,9 +175,10 @@ const BaseComponent: FC<Props> = ({ store }: Props) => {
         backboneGutter={40}
         verticalSpace={50}
         clusterVerticalSpace={25}
-        bundleMap={map}
         clusterLabels={false}
         popupContent={popup}
+        annotationHeight={50}
+        annotationContent={annotiation}
         eventConfig={eventConfig}
       />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
