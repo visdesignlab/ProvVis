@@ -40,16 +40,17 @@ export default function linkTransitions(
       clusteredNodesInFront === 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;
 
     const { source, target } = data;
-    const x1 = xOffset * source.width;
-    const x2 = xOffset * target.width;
+    const x1 = getX(source.width, xOffset, backboneOffset);
+    const x2 = getX(target.width, xOffset, backboneOffset);
+
     let y1 = yOffset * source.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
     let y2 = yOffset * target.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
 
-    if (annotationOpen != -1 && source.depth > annotationOpen) {
+    if (annotationOpen !== -1 && source.depth > annotationOpen && source.width === 0) {
       y1 += annotationHeight;
     }
 
-    if (annotationOpen != -1 && target.depth > annotationOpen) {
+    if (annotationOpen !== -1 && target.depth > annotationOpen && target.width === 0) {
       y2 += annotationHeight;
     }
 
@@ -83,11 +84,11 @@ export default function linkTransitions(
     let y1 = yOffset * source.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
     let y2 = yOffset * target.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
 
-    if (annotationOpen != -1 && source.depth > annotationOpen && source.width == 0) {
+    if (annotationOpen !== -1 && source.depth > annotationOpen && source.width === 0) {
       y1 += annotationHeight;
     }
 
-    if (annotationOpen != -1 && target.depth > annotationOpen && target.width == 0) {
+    if (annotationOpen !== -1 && target.depth > annotationOpen && target.width === 0) {
       y2 += annotationHeight;
     }
 

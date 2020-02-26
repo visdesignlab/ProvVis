@@ -71,7 +71,7 @@ export default function bundleTransitions(
 
     let y = yOffset * highestDepth - ((yOffset - clusterOffset) * clusteredNodesInFront);
 
-    if(annotationOpen != -1 && highestDepth > annotationOpen)
+    if(annotationOpen !== -1 && highestDepth > annotationOpen)
     {
       y += annotationHeight;
     }
@@ -142,7 +142,7 @@ export default function bundleTransitions(
 
     let y = yOffset * highestDepth - ((yOffset - clusterOffset) * clusteredNodesInFront);
 
-    if(annotationOpen != -1 && highestDepth > annotationOpen)
+    if(annotationOpen !== -1 && highestDepth > annotationOpen)
     {
       y += annotationHeight;
     }

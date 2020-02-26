@@ -105,7 +105,7 @@ function BackboneNode<T, S extends string, A>({
               fontWeight={current ? 'bold' : 'regular'}
               onClick={() => labelClicked(node)}
             />
-            {(annotationOpen !== -1 && nodeMap[node.id].depth == annotationOpen && annotationContent) ? (
+            {(annotationOpen !== -1 && nodeMap[node.id].depth === annotationOpen && annotationContent) ? (
               <g>
                 {annotationContent(nodeMap[node.id])}
               </g>
@@ -120,12 +120,11 @@ function BackboneNode<T, S extends string, A>({
 
   function labelClicked(node:ProvenanceNode<T, S, A>)
   {
-    console.log("label clicked")
     if(!annotationContent)
     {
       return;
     }
-    else if(annotationOpen == nodeMap[node.id].depth)
+    else if(annotationOpen === nodeMap[node.id].depth)
     {
       setAnnotationOpen(-1);
     }
@@ -136,7 +135,6 @@ function BackboneNode<T, S extends string, A>({
 
   function nodeClicked(node:ProvenanceNode<T, S, A>)
   {
-    console.log("node clicked")
     if(annotationOpen !== -1 && (nodeMap[node.id].width > 0 || nodeMap[node.id].depth !== annotationOpen))
     {
       setAnnotationOpen(-1);

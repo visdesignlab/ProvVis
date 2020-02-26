@@ -175,11 +175,11 @@ const BaseComponent: FC<Props> = ({ store }: Props) => {
         backboneGutter={40}
         verticalSpace={50}
         clusterVerticalSpace={25}
+        bundleMap={map}
         clusterLabels={false}
         popupContent={popup}
         annotationHeight={50}
         annotationContent={annotiation}
-        eventConfig={eventConfig}
       />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Button.Group>

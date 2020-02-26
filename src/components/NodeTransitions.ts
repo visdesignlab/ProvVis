@@ -44,7 +44,7 @@ export default function nodeTransitions(
 
     let y = yOffset * data.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
 
-    if (annotationOpen != -1 && data.depth > annotationOpen && data.width == 0) {
+    if (annotationOpen !== -1 && data.depth > annotationOpen && data.width === 0) {
       y += annotationHeight;
     }
 
@@ -79,7 +79,7 @@ export default function nodeTransitions(
 
     let y = yOffset * data.depth - (yOffset - clusterOffset) * clusteredNodesInFront;
 
-    if (annotationOpen != -1 && data.depth > annotationOpen && data.width == 0) {
+    if (annotationOpen !== -1 && data.depth > annotationOpen && data.width === 0) {
       y += annotationHeight;
     }
 
