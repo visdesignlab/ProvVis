@@ -20,9 +20,9 @@ export interface ProvVisConfig {
   duration: number;
 }
 
-export function ProvVisCreator<T, S extends string>(
+export function ProvVisCreator<T, S extends string, A>(
   node: Element,
-  graph: ProvenanceGraph<T, S>,
+  graph: ProvenanceGraph<T, S, A>,
   fauxRoot: NodeID = graph.root,
   config: Partial<ProvVisConfig> = {}
 ) {
