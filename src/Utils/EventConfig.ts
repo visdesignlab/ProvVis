@@ -7,4 +7,6 @@ export type Config = {
   bundleGlyph: ReactChild;
 };
 
-export type EventConfig<E extends string> = { [key in E]: Config };
+export type EventConfig<E extends string> = {
+  [key: string]: Partial<Config>;
+};
