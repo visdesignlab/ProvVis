@@ -54,9 +54,8 @@ const annotiation = (node: StateNode<DemoState, Events, DemoAnnotation>) => {
   // console.log(JSON.parse(JSON.stringify(node)))
 
   return(
-  <g transform='translate(0, 20)'>
-    <rect height='60' width='175' rx="10" ry="10" fill='none' stroke='grey' />;
-    <text x="10" y="35" fontSize=".5em">Depth: {node.id}</text>
+  <g transform='translate(0, 5)'>
+    <text x="10" y="35" fontSize="1em">Sample annotation</text>
   </g>)
 }
 
@@ -78,15 +77,15 @@ prov.addObserver(['tasks'], (state?: DemoState) => {
   {
     map = {
       [idList[12]]: {
-        metadata: undefined,
+        metadata: idList[12],
         bundleLabel: "Clustering Label",
         bunchedNodes: [idList[10], idList[11]]
       },
 
-      [idList[21]]: {
-        metadata: undefined,
+      [idList[24]]: {
+        metadata: idList[24],
         bundleLabel: "Clustering Label",
-        bunchedNodes: [idList[22], idList[23], idList[24]]
+        bunchedNodes: [idList[22], idList[23], idList[21]]
       }
     };
   }
@@ -143,19 +142,20 @@ const eventConfig: EventConfig<Events> = {
     backboneGlyph: <AddTaskGlyph size={14} />,
     currentGlyph: <AddTaskGlyph size={20} />,
     regularGlyph: <AddTaskGlyph size={12} />,
-    bundleGlyph:  <AddTaskGlyph size={10} />
+    bundleGlyph:  <AddTaskGlyph size={14} fill={"cornflowerblue"}/>
   },
   'Change Task': {
     backboneGlyph: <ChangeTaskGlyph size={14} />,
     currentGlyph: <ChangeTaskGlyph size={20} />,
     regularGlyph: <ChangeTaskGlyph size={12} />,
-    bundleGlyph: <ChangeTaskGlyph size={10} />
+    bundleGlyph: <ChangeTaskGlyph size={14} fill={"cornflowerblue"}/>
   }
 };
 
 interface Props {
   store?: any;
 }
+
 const BaseComponent: FC<Props> = ({ store }: Props) => {
   const { graph, isRoot, isLatest, tasks } = store!;
   const { root, nodes, current } = graph;
@@ -166,7 +166,6 @@ const BaseComponent: FC<Props> = ({ store }: Props) => {
         width={500}
         height={800}
         sideOffset={200}
-        graph={graph}
         root={root}
         current={current}
         nodeMap={nodes}
@@ -174,7 +173,7 @@ const BaseComponent: FC<Props> = ({ store }: Props) => {
         gutter={20}
         backboneGutter={40}
         verticalSpace={50}
-        clusterVerticalSpace={25}
+        clusterVerticalSpace={50}
         bundleMap={map}
         clusterLabels={false}
         popupContent={popup}

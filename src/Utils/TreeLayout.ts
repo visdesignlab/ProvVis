@@ -1,5 +1,5 @@
 import { HierarchyNode } from 'd3';
-import { StratifiedMap, StratifiedList } from '../components/ProvVis';
+import { StratifiedMap } from '../components/ProvVis';
 import { ProvenanceNode } from '@visdesignlab/provenance-lib-core';
 
 export type TreeNode = HierarchyNode<unknown>;
@@ -8,7 +8,9 @@ export interface ExtendedHierarchyNode<T, S, A> extends HierarchyNode<Provenance
   column: number;
 }
 
-export type ExtendedStratifiedMap<T, S, A> = { [key: string]: ExtendedHierarchyNode<T, S, A> };
+export type ExtendedStratifiedMap<T, S, A> = {
+  [key: string]: ExtendedHierarchyNode<T, S, A>;
+};
 
 export function treeLayout<T, S, A>(nodes: StratifiedMap<T, S, A>, current: string, root: string) {
   const depthMap: { [key: string]: any } = {};
