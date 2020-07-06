@@ -1,5 +1,5 @@
 
-import { isStateNode, isChildNode, NodeID, Nodes, ProvenanceGraph, ProvenanceNode, StateNode, ChildNode, DiffNode } from '../../../../src/index';
+import { Provenance, isStateNode, isChildNode, NodeID, Nodes, ProvenanceGraph, ProvenanceNode, StateNode, ChildNode, DiffNode } from '@visdesignlab/provenance-lib-core';
 import { HierarchyNode, stratify, Symbol, symbol, symbolWye, symbolCross, symbolCircle, symbolTriangle, symbolSquare, symbolDiamond, symbolStar } from 'd3';
 
 import React, { ReactChild, useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ import { EventConfig } from '../Utils/EventConfig';
 import findBundleParent from '../Utils/findBundleParent';
 import translate from '../Utils/translate';
 
+import UndoRedoButton from "./UndoRedoButton"
 import { treeLayout } from '../Utils/TreeLayout';
 import BackboneNode from './BackboneNode';
 import bundleTransitions from './BundleTransitions';
@@ -21,7 +22,6 @@ import nodeTransitions from './NodeTransitions';
 import { treeColor } from './Styles';
 
 interface ProvVisProps<T, S extends string, A> {
-  graph: ProvenanceGraph<T, S, A>;
   root: NodeID;
   sideOffset?: number;
   iconOnly?: boolean;
@@ -48,6 +48,9 @@ interface ProvVisProps<T, S extends string, A> {
   changeCurrent?: (id: NodeID) => void;
   popupContent?: (nodeId: StateNode<T, S, A>) => ReactChild;
   annotationContent?: (nodeId: StateNode<T, S, A>) => ReactChild;
+  undoRedoButtons?: boolean;
+  prov?: Provenance<T, S, A>;
+  ephemeralUndo?: boolean;
 }
 
 export type StratifiedMap<T, S, A> = {
@@ -83,6 +86,9 @@ function ProvVis<T, S extends string, A>({
   eventConfig,
   popupContent,
   annotationContent,
+  undoRedoButtons = true,
+  prov,
+  ephemeralUndo = false
 }: ProvVisProps<T, S, A>) {
   const [first, setFirst] = useState(true);
   const [annotationOpen, setAnnotationOpen] = useState(-1);
@@ -413,7 +419,43 @@ function ProvVis<T, S extends string, A>({
   } as React.CSSProperties;
 
   return (
+
     <div style={overflowStyle} className={container} id="prov-vis">
+      <div id="undoRedoDiv">
+        <UndoRedoButton
+          graph={prov ? prov.graph() : undefined}
+          undoCallback = {() => {
+            if(prov)
+            {
+              if(ephemeralUndo)
+              {
+                prov.goBackToNonEphemeral()
+              }
+              else{
+                prov.goBackOneStep();
+              }
+            }
+            else{
+              return;
+            }
+          }}
+          redoCallback = {() => {
+            if(prov)
+            {
+              if(ephemeralUndo)
+              {
+                prov.goForwardToNonEphemeral()
+              }
+              else{
+                prov.goForwardOneStep();
+              }
+            }
+            else{
+              return;
+            }
+          }}
+        />
+      </div>
       <svg
         style={{ overflow: "visible" }}
         id={"topSvg"}
@@ -609,7 +651,6 @@ function ProvVis<T, S extends string, A>({
 export default ProvVis;
 
 const container = style({
-  display: "flex",
   alignItems: "center",
   justifyContent: "center",
   overflow: "auto",

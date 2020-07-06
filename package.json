@@ -146,7 +146,7 @@
     }
   },
   "dependencies": {
-    "@visdesignlab/provenance-lib-core": "^4.2.1",
+    "@visdesignlab/provenance-lib-core": "^5.0.0",
     "d3": "^5.15.0",
     "mobx": "^5.15.4",
     "mobx-react": "^6.1.7",

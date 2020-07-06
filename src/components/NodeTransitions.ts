@@ -20,10 +20,15 @@ export default function nodeTransitions(
     let clusteredNodesInFront = 0;
 
     const x = getX(data.width, xOffset, backboneOffset);
+    let parentId: string | undefined = undefined;
 
-    let parentId = findBundleParent(data.id, bundleMap).filter(d => {
+    let arr = findBundleParent(data.id, bundleMap).filter(d => {
       return nodeMap[d].width === 0;
-    })[0];
+    });
+
+    if (arr.length > 0) {
+      parentId = arr[0];
+    }
 
     clusteredNodesInFront =
       clusteredNodesInFront === 0 ? clusteredNodesInFront : clusteredNodesInFront - 1;

@@ -166,7 +166,6 @@ const BaseComponent: FC<Props> = ({ store }: Props) => {
         width={500}
         height={800}
         sideOffset={200}
-        graph={graph}
         root={root}
         current={current}
         nodeMap={nodes}
