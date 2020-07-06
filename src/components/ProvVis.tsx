@@ -201,6 +201,7 @@ function ProvVis<T, S extends string, A>({
     eventConfig = setDefaultConfig<S>(eventTypes);
   }
 
+
   useEffect(() => {
     setFirst(false);
   }, []);
@@ -208,6 +209,7 @@ function ProvVis<T, S extends string, A>({
   let nodeList = Object.values(nodeMap).filter(
     (d) => true
   );
+
 
   let copyList = Array.from(nodeList);
 
@@ -419,7 +421,6 @@ function ProvVis<T, S extends string, A>({
   } as React.CSSProperties;
 
   return (
-
     <div style={overflowStyle} className={container} id="prov-vis">
       <div id="undoRedoDiv">
         <UndoRedoButton
@@ -502,6 +503,7 @@ function ProvVis<T, S extends string, A>({
           <NodeGroup
             data={stratifiedList}
             keyAccessor={(d) => d.id}
+
             {...nodeTransitions(
               xOffset,
               yOffset,
@@ -571,6 +573,7 @@ function ProvVis<T, S extends string, A>({
                               </g>
                             }
                           />
+
                         ) : (
                           <g
                             onClick={() => {
