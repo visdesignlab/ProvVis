@@ -1,6 +1,6 @@
 {
   "name": "@visdesignlab/provvis",
-  "version": "0.0.0-development",
+  "version": "0.0.0",
   "description": "",
   "keywords": [],
   "main": "dist/provvis.umd.js",
