@@ -1,15 +1,15 @@
-import resolve from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
-import sourceMaps from 'rollup-plugin-sourcemaps'
-import camelCase from 'lodash.camelcase'
-import typescript from 'rollup-plugin-typescript2'
-import json from 'rollup-plugin-json'
-import external from 'rollup-plugin-peer-deps-external'
-import postcss from 'rollup-plugin-postcss'
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+import sourceMaps from 'rollup-plugin-sourcemaps';
+import camelCase from 'lodash.camelcase';
+import typescript from 'rollup-plugin-typescript2';
+import json from 'rollup-plugin-json';
+import external from 'rollup-plugin-peer-deps-external';
+import postcss from 'rollup-plugin-postcss';
 
-const pkg = require('./package.json')
+const pkg = require('./package.json');
 
-const libraryName = 'provvis'
+const libraryName = 'trrackvis';
 
 export default {
   input: `src/${libraryName}.ts`,
@@ -51,4 +51,4 @@ export default {
     // Resolve source maps to the original source
     sourceMaps()
   ]
-}
+};

@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/provvis.umd.js",
-  "module": "dist/provvis.es5.js",
-  "typings": "dist/types/provvis.d.ts",
+  "main": "dist/trrackvis.umd.js",
+  "module": "dist/trrackvis.es5.js",
+  "typings": "dist/types/trrackvis.d.ts",
   "files": [
     "dist"
   ],
