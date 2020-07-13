@@ -12,7 +12,7 @@
   "author": "Kiran Gadhave <kirangadhave2@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git@github.com:visdesignlab/ProvVis.git"
+    "url": "git@github.com:visdesignlab/trrack-vis.git"
   },
   "license": "MIT",
   "engines": {
