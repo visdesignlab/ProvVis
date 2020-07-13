@@ -97,6 +97,7 @@
     "@types/node": "^13.7.0",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
+    "@visdesignlab/provenance-lib-core": "^5.0.0",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.6",
     "colors": "^1.4.0",
@@ -104,15 +105,19 @@
     "coveralls": "^3.0.9",
     "cross-env": "^7.0.0",
     "cz-conventional-changelog": "^3.1.0",
+    "d3": "^5.15.0",
     "husky": "^4.2.1",
     "jest": "^25.1.0",
     "jest-config": "^25.1.0",
     "lint-staged": "^10.0.7",
     "lodash.camelcase": "^4.3.0",
+    "mobx": "^5.15.4",
+    "mobx-react": "^6.2.2",
     "prettier": "^1.19.1",
     "prompt": "^1.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-move": "^6.1.0",
     "replace-in-file": "^5.0.2",
     "rimraf": "^3.0.1",
     "rollup": "^1.31.0",
@@ -123,7 +128,7 @@
     "rollup-plugin-postcss": "^2.0.5",
     "rollup-plugin-sourcemaps": "^0.5.0",
     "rollup-plugin-typescript2": "^0.25.3",
-    "semantic-release": "^17.0.2",
+    "semantic-ui-react": "^0.88.2",
     "shelljs": "^0.8.3",
     "travis-deploy-once": "^5.0.11",
     "ts-jest": "^25.1.0",
@@ -132,7 +137,8 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-config-standard": "^9.0.0",
     "typedoc": "^0.16.9",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "typestyle": "^2.0.4"
   },
   "peerDependencies": {
     "react": "^16.12.0",
@@ -145,14 +151,5 @@
       "pre-push": "npm run test:prod && npm run build"
     }
   },
-  "dependencies": {
-    "@visdesignlab/provenance-lib-core": "^5.0.0",
-    "d3": "^5.15.0",
-    "mobx": "^5.15.4",
-    "mobx-react": "^6.1.7",
-    "react-move": "^6.1.0",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.2",
-    "typestyle": "^2.0.4"
-  }
+  "dependencies": {}
 }

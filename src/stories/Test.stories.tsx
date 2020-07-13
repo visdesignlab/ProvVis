@@ -4,7 +4,6 @@ import { ProvenanceGraph, initProvenance, NodeID, StateNode } from '@visdesignla
 import { Button } from 'semantic-ui-react';
 import { inject, observer, Provider } from 'mobx-react';
 import { observable } from 'mobx';
-import 'semantic-ui-css/semantic.min.css';
 import { EventConfig } from '../Utils/EventConfig';
 import { BundleMap } from '../Utils/BundleMap';
 import { AddTaskGlyph, ChangeTaskGlyph } from './Nodes';
@@ -156,6 +155,8 @@ interface Props {
   store?: any;
 }
 
+
+
 const BaseComponent: FC<Props> = ({ store }: Props) => {
   const { graph, isRoot, isLatest, tasks } = store!;
   const { root, nodes, current } = graph;
@@ -179,26 +180,9 @@ const BaseComponent: FC<Props> = ({ store }: Props) => {
         popupContent={popup}
         annotationHeight={50}
         annotationContent={annotiation}
+        undoRedoButtons={true}
+        prov={prov}
       />
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Button.Group>
-          <Button disabled={isRoot} onClick={undo}>
-            Undo
-          </Button>
-          <Button.Or></Button.Or>
-          <Button disabled={isLatest} onClick={redo}>
-            Redo
-          </Button>
-          <Button.Or></Button.Or>
-          <Button
-            onClick={() => {
-              addTask(Math.random().toString());
-            }}
-          >
-            Add Task
-          </Button>
-        </Button.Group>
-      </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div>
           {tasks.map((d: any) => {
