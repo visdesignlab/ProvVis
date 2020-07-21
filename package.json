@@ -131,7 +131,7 @@
     "tslint": "^6.0.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-config-standard": "^9.0.0",
-    "typedoc": "^0.16.9",
+    "typedoc": "^0.16.11",
     "typescript": "^3.7.5"
   },
   "peerDependencies": {
@@ -146,7 +146,7 @@
     }
   },
   "dependencies": {
-    "@visdesignlab/provenance-lib-core": "^5.0.0",
+    "@visdesignlab/trrack": "^1.0.0",
     "d3": "^5.15.0",
     "mobx": "^5.15.4",
     "mobx-react": "^6.1.7",
