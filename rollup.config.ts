@@ -19,7 +19,11 @@ export default {
     { file: pkg.module, format: 'es', sourcemap: true, exports: 'named' }
   ],
   // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
-  external: [],
+  external: [
+    'react',
+    'react-dom',
+    'prop-types'
+  ],
   watch: {
     include: 'src/**'
   },
