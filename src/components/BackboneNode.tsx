@@ -1,4 +1,4 @@
-import { ProvenanceNode, StateNode } from '@visdesignlab/provenance-lib-core';
+import { ProvenanceNode, StateNode } from '@visdesignlab/trrack';
 import React, { ReactChild } from 'react';
 import { Animate } from 'react-move';
 import { Popup } from 'semantic-ui-react';

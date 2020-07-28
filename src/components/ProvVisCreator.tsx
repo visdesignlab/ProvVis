@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import ProvVis from './ProvVis';
 import UndoRedoButton from './UndoRedoButton';
 
-import { Provenance, ProvenanceGraph, NodeID } from '@visdesignlab/provenance-lib-core';
+import { Provenance, ProvenanceGraph, NodeID } from '@visdesignlab/trrack';
 
 export interface ProvVisConfig {
   height: number;
