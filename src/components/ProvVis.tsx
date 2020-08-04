@@ -49,6 +49,7 @@ interface ProvVisProps<T, S extends string, A> {
   popupContent?: (nodeId: StateNode<T, S, A>) => ReactChild;
   annotationContent?: (nodeId: StateNode<T, S, A>) => ReactChild;
   undoRedoButtons?: boolean;
+  editAnnotations?: boolean
   prov?: Provenance<T, S, A>;
   ephemeralUndo?: boolean;
 }
@@ -86,11 +87,13 @@ function ProvVis<T, S extends string, A>({
   eventConfig,
   popupContent,
   annotationContent,
+  editAnnotations = false,
   undoRedoButtons = true,
   prov,
   ephemeralUndo = false
 }: ProvVisProps<T, S, A>) {
   const [first, setFirst] = useState(true);
+  const [bookmark, setBookmark] = useState(false);
   const [annotationOpen, setAnnotationOpen] = useState(-1);
   let list: string[] = [];
   let eventTypes = new Set<string>();
@@ -132,9 +135,8 @@ function ProvVis<T, S extends string, A>({
 
   if(bundleMap)
   {
-    list = list.concat(Object.keys(bundleMap).filter(d => bundleMap[d].metadata && bundleMap[d].metadata.includes(d)));
+    list = list.concat(Object.keys(bundleMap));
   }
-
 
   function setDefaultConfig<E extends string>(types:Set<string>): EventConfig<E> {
     let symbols = [
@@ -194,7 +196,7 @@ function ProvVis<T, S extends string, A>({
   }
 
 
-  const [expandedClusterList, setExpandedClusterList] = useState<string[]>(list);
+  const [expandedClusterList, setExpandedClusterList] = useState<string[]>(Object.keys(bundleMap));
 
   if(!eventConfig && eventTypes.size > 0 && eventTypes.size < 8)
   {
@@ -538,6 +540,7 @@ function ProvVis<T, S extends string, A>({
                       >
                         {d.width === 0 ? (
                           <BackboneNode
+                            prov={prov}
                             textSize={textSize}
                             iconOnly={iconOnly}
                             radius={backboneCircleRadius}
@@ -546,12 +549,15 @@ function ProvVis<T, S extends string, A>({
                             first={first}
                             current={current === d.id}
                             node={d.data}
+                            setBookmark={setBookmark}
+                            bookmark={bookmark}
                             bundleMap={bundleMap}
                             nodeMap={stratifiedMap}
                             clusterLabels={clusterLabels}
                             annotationOpen={annotationOpen}
                             setAnnotationOpen={setAnnotationOpen}
                             exemptList={expandedClusterList}
+                            editAnnotations={editAnnotations}
                             setExemptList={setExpandedClusterList}
                             eventConfig={eventConfig}
                             annotationContent={annotationContent}
