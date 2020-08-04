@@ -1,4 +1,4 @@
-import { ProvenanceNode, StateNode } from '@visdesignlab/trrack';
+import { Provenance, ProvenanceNode, ProvenanceGraph, StateNode } from '@visdesignlab/trrack';
 import React, { ReactChild } from 'react';
 import { Animate } from 'react-move';
 import { Popup } from 'semantic-ui-react';
@@ -9,6 +9,7 @@ import translate from '../Utils/translate';
 import { treeColor } from './Styles';
 
 interface BackboneNodeProps<T, S extends string, A> {
+  prov?: Provenance<T, S, A>;
   first: boolean;
   iconOnly: boolean;
   current: boolean;
@@ -17,6 +18,8 @@ interface BackboneNodeProps<T, S extends string, A> {
   radius: number;
   strokeWidth: number;
   textSize: number;
+  setBookmark: any;
+  bookmark: boolean;
   nodeMap: any;
   annotationOpen: number;
   setAnnotationOpen: any;
@@ -24,6 +27,7 @@ interface BackboneNodeProps<T, S extends string, A> {
   setExemptList: any;
   bundleMap?: BundleMap;
   clusterLabels: boolean;
+  editAnnotations: boolean;
   eventConfig?: EventConfig<S>;
   popupContent?: (nodeId: StateNode<T, S, A>) => ReactChild;
   annotationContent?: (nodeId: StateNode<T, S, A>) => ReactChild;
@@ -31,6 +35,7 @@ interface BackboneNodeProps<T, S extends string, A> {
 }
 
 function BackboneNode<T, S extends string, A>({
+  prov,
   first,
   iconOnly,
   current,
@@ -41,6 +46,8 @@ function BackboneNode<T, S extends string, A>({
   textSize,
   nodeMap,
   annotationOpen,
+  setBookmark,
+  bookmark,
   setAnnotationOpen,
   exemptList,
   setExemptList,
@@ -48,6 +55,7 @@ function BackboneNode<T, S extends string, A>({
   clusterLabels,
   eventConfig,
   popupContent,
+  editAnnotations,
   annotationContent,
   expandedClusterList,
 }: BackboneNodeProps<T, S, A>) {
@@ -104,8 +112,8 @@ function BackboneNode<T, S extends string, A>({
   let label: string = "";
   let annotate: string = "";
 
-  console.log(bundleMap)
-  console.log(nodeMap[node.id]);
+  //console.log(bundleMap)
+  //console.log(nodeMap[node.id]);
 
   if (bundleMap && Object.keys(bundleMap).includes(node.id) && node.ephemeral && expandedClusterList && !expandedClusterList.includes(node.id))
   {
@@ -130,9 +138,10 @@ function BackboneNode<T, S extends string, A>({
     return null;
   }
 
-  if (annotate.length > 30) annotate = annotate.substr(0, 30) + "..";
+  if (annotate.length > 20) annotate = annotate.substr(0, 20) + "..";
 
-  if (label.length > 30) label = label.substr(0, 30) + "..";
+  if (label.length > 20) label = label.substr(0, 20) + "..";
+
 
   let labelG = (
     <g style={{ opacity: 1 }} transform={translate(padding, 0)}>
@@ -154,6 +163,13 @@ function BackboneNode<T, S extends string, A>({
                 ? "\uf0d8"
                 : "\uf0d7"}
             </text>
+          ) : (
+            <g></g>
+          )}
+          {editAnnotations ? (
+            <button
+             ><i className="fas fa-undo marginRight"></i>
+               Undo</button>
           ) : (
             <g></g>
           )}
@@ -179,6 +195,28 @@ function BackboneNode<T, S extends string, A>({
             onClick={() => labelClicked(node)}
           >
             {annotate}
+          </text>
+          ,
+          <text
+            style={cursorStyle}
+            onClick={(e) => {
+              if(prov)
+              {
+                prov.setBookmark(node.id, !prov.getBookmark(node.id));
+                setBookmark(!bookmark);
+              }
+
+              e.stopPropagation();
+            }}
+            fontSize={17}
+            fill={(prov && prov.getBookmark(node.id)) ? "#2185d0" : "#cccccc"}
+            textAnchor="middle"
+            alignmentBaseline="middle"
+            x={175}
+            y={0}
+            fontFamily="FontAwesome"
+          >
+            {"\uf02e"}
           </text>
         </g>
       ) : (

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ProvVis } from '../provvis';
-import { ProvenanceGraph, initProvenance, NodeID, StateNode } from '@visdesignlab/provenance-lib-core';
+import { ProvenanceGraph, initProvenance, NodeID, StateNode } from '@visdesignlab/trrack';
 import { Button } from 'semantic-ui-react';
 import { inject, observer, Provider } from 'mobx-react';
 import { observable } from 'mobx';
