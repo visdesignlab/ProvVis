@@ -347,6 +347,8 @@ function ProvVis<T, S extends string, A>({
     }
   }
 
+  maxHeight = maxHeight * verticalSpace + 200;
+
   const links = stratifiedTree.links();
 
   const xOffset = gutter;
