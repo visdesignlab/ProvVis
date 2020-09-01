@@ -347,6 +347,8 @@ function ProvVis<T, S extends string, A>({
     }
   }
 
+  maxHeight = maxHeight * verticalSpace + 200;
+
   const links = stratifiedTree.links();
 
   const xOffset = gutter;
@@ -393,10 +395,8 @@ function ProvVis<T, S extends string, A>({
 
   if (maxWidth === 0) {
     shiftLeft = 30;
-  } else if (maxWidth === 1) {
-    shiftLeft = 52;
-  } else if (maxWidth > 1) {
-    shiftLeft = 74;
+  } else {
+    shiftLeft = 30 + maxWidth * 22;
   }
 
   let svgWidth = width;
